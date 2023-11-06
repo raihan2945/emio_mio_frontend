@@ -18,6 +18,7 @@ import Promotion from "./pages/Promotion/Promotion";
 import Survey from "./pages/Survey/Survey";
 import Campaign from "./pages/Promotion/Campaign";
 import Drafts from "./pages/Promotion/Drafts";
+import MIOProfile from "./pages/Mio/Profile";
 
 function App() {
   return (
@@ -28,15 +29,15 @@ function App() {
         <Main>
           <Route exact path="/" component={Home} />
           <Route exact path="/dashboard" component={Home} />
-          <Route exact path="/doctors/profile:id" component={Doctors} />
+          <Route exact path="/doctors/profile" component={Doctors} />
           <Route exact path="/doctors" component={Doctors} />
-          <Route exact path="/mio/profile:id" component={Mio} />
+          <Route exact path="/mio/profile" component={MIOProfile} />
           <Route exact path="/mio" component={Mio} />
-          <Route exact path="/chemist/profile:id" component={Chemists} />
-          <Route exact path="/chemist" component={Chemists} />
+          <Route exact path="/chemists/profile:id" component={Chemists} />
+          <Route exact path="/chemists" component={Chemists} />
           <Route exact path="/promotion" component={Promotion} />
           <Route exact path="/drafts" component={Drafts} />
-          <Route exact path="/campaign" component={Campaign} />
+          <Route exact path="/campaigns" component={Campaign} />
           <Route exact path="/survey" component={Survey} />
           {/* <Redirect from="*" to="/dashboard" /> */}
           <Route exact path="/tables" component={Tables} />

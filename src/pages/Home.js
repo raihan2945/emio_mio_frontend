@@ -30,6 +30,7 @@ import {
   RightOutlined,
 } from "@ant-design/icons";
 import Paragraph from "antd/lib/typography/Paragraph";
+import { NavLink } from "react-router-dom";
 
 function Home() {
   const { Title, Text } = Typography;
@@ -125,33 +126,36 @@ function Home() {
     </svg>,
   ];
   const count = [
+    // {
+    //   today: "Total ",
+    //   title: "53,000",
+    //   persent: "+30%",
+    //   icon: <img src="icons/doctor.png" />,
+    //   bnb: "bnb2",
+    // },
     {
-      today: "Total MIO",
-      title: "53,000",
-      persent: "+30%",
-      icon: dollor,
-      bnb: "bnb2",
-    },
-    {
-      today: "Total Doctors",
-      title: "3,200",
+      today: "All",
+      title: "Doctors",
       persent: "+20%",
-      icon: profile,
+      icon: <img src="icons/doctor.png" />,
       bnb: "bnb2",
+      link:"/doctors"
     },
     {
-      today: "Total Chemists",
-      title: "1,200",
+      today: "All",
+      title: "Chemists",
       persent: "-20%",
-      icon: heart,
+      icon: <img src="icons/pharmacist.png" />,
       bnb: "redtext",
+      link:"/chemists"
     },
     {
-      today: "Total chambers",
-      title: "13,200",
+      today: "All",
+      title: "Campaigns",
       persent: "10%",
-      icon: cart,
+      icon: <img src="icons/grouping.png" />,
       bnb: "bnb2",
+      link:"/campaigns"
     },
   ];
 
@@ -169,25 +173,26 @@ function Home() {
               xl={6}
               className="mb-24"
             >
-              <Card bordered={false} className="criclebox ">
-                <div className="number">
-                  <Row align="middle" gutter={[24, 0]}>
-                    <Col xs={18}>
-                      <span>{c.today}</span>
-                      <Title level={3}>
-                        {c.title} <small className={c.bnb}></small>
-                      </Title>
-                    </Col>
-                    <Col xs={6}>
-                      <div className="icon-box">{c.icon}</div>
-                    </Col>
-                  </Row>
-                </div>
-              </Card>
+              <NavLink to={c.link}>
+                <Card bordered={false} className="criclebox ">
+                  <div className="number">
+                    <Row align="middle" gutter={[24, 0]}>
+                      <Col xs={18}>
+                        {/* <span>{c.today}</span> */}
+                        <Title style={{ margin: 0 }} level={4}>
+                          {c.title} <small className={c.bnb}></small>
+                        </Title>
+                      </Col>
+                      <Col xs={6}>
+                        <div>{c.icon}</div>
+                      </Col>
+                    </Row>
+                  </div>
+                </Card>
+              </NavLink>
             </Col>
           ))}
         </Row>
-      
       </div>
     </>
   );

@@ -34,7 +34,7 @@ import {
   FacebookFilled,
 } from "@ant-design/icons";
 
-// import {} from 
+import { IconName } from "react-icons/ai";
 
 import { NavLink, Link } from "react-router-dom";
 import styled from "styled-components";
@@ -423,9 +423,12 @@ function Header({
               </div>
             </div>
           </Drawer>
-          <Link to="/sign-in" className="btn-sign-in">
-            {profile}
-            <span>Sign in</span>
+          <Link to="/mio/profile" className="btn-sign-in">
+            <img
+              style={{ width: "26px", height: "auto", objectFit:"contain" }}
+              src="icons/profile.png"
+            />
+            {/* <span>Sign in</span> */}
           </Link>
           <Input
             className="header-search"
