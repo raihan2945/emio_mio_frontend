@@ -1,10 +1,9 @@
-import React from 'react'
-import { Button, Space, Table, Tag } from "antd";
+import React from "react";
+import { Button, Card, Divider, Space, Table, Tag } from "antd";
 import FilterSection from "../../views/Filter/FilterSection";
-import { NavLink } from 'react-router-dom/cjs/react-router-dom';
+import { NavLink } from "react-router-dom";
 
 const Chemists = () => {
-
   const columns = [
     {
       title: "ID",
@@ -76,8 +75,7 @@ const Chemists = () => {
       render: (_, record) => (
         <Space size="middle">
           <NavLink to="/chemist/profile">
-
-         <Button>Profile</Button>
+            <Button>Profile</Button>
           </NavLink>
         </Space>
       ),
@@ -92,7 +90,7 @@ const Chemists = () => {
       address: "123 Main St",
       mobile: "555-555-5555",
       designation: "Manager",
-      link: '/chemist/profile'
+      link: "/chemist/profile",
     },
     {
       id: 2,
@@ -101,7 +99,7 @@ const Chemists = () => {
       address: "456 Elm St",
       mobile: "555-555-5556",
       designation: "Salesperson",
-      link: '/chemist/profile'
+      link: "/chemist/profile",
     },
     {
       id: 3,
@@ -110,7 +108,7 @@ const Chemists = () => {
       address: "789 Oak St",
       mobile: "555-555-5557",
       designation: "Supervisor",
-      link: '/chemist/profile'
+      link: "/chemist/profile",
     },
     {
       id: 4,
@@ -119,7 +117,7 @@ const Chemists = () => {
       address: "101 Pine St",
       mobile: "555-555-5558",
       designation: "Assistant Manager",
-      link: '/chemist/profile'
+      link: "/chemist/profile",
     },
     {
       id: 5,
@@ -128,7 +126,7 @@ const Chemists = () => {
       address: "222 Cedar St",
       mobile: "555-555-5559",
       designation: "Clerk",
-      link: '/chemist/profile'
+      link: "/chemist/profile",
     },
     {
       id: 6,
@@ -137,7 +135,7 @@ const Chemists = () => {
       address: "333 Birch St",
       mobile: "555-555-5560",
       designation: "Associate",
-      link: '/chemist/profile'
+      link: "/chemist/profile",
     },
     {
       id: 7,
@@ -146,7 +144,7 @@ const Chemists = () => {
       address: "444 Redwood St",
       mobile: "555-555-5561",
       designation: "Technician",
-      link: '/chemist/profile'
+      link: "/chemist/profile",
     },
     {
       id: 8,
@@ -155,7 +153,7 @@ const Chemists = () => {
       address: "555 Maple St",
       mobile: "555-555-5562",
       designation: "Coordinator",
-      link: '/chemist/profile'
+      link: "/chemist/profile",
     },
     {
       id: 9,
@@ -164,7 +162,7 @@ const Chemists = () => {
       address: "666 Spruce St",
       mobile: "555-555-5563",
       designation: "Engineer",
-      link: '/chemist/profile'
+      link: "/chemist/profile",
     },
     {
       id: 10,
@@ -173,22 +171,37 @@ const Chemists = () => {
       address: "777 Walnut St",
       mobile: "555-555-5564",
       designation: "Analyst",
-      link: '/chemist/profile'
-    }
+      link: "/chemist/profile",
+    },
   ];
 
   return (
     <div>
-    {/* <FilterSection userType="chemist" /> */}
-    <div className="table-responsive">
-      <Table
+      {/* <FilterSection userType="chemist" /> */}
+      <h5 style={{color:"#3F51B5"}}>Chemists </h5>
+      <div className="table-responsive">
+        {/* <Table
         columns={columns}
         dataSource={data}
         pagination={true}
         className="ant-border-space"
-      />
+        size="small"
+      /> */}
+        {data?.map((d) => {
+          return (
+            <NavLink to="/chemists/profile">
+
+            <Card style={{padding:"0", marginBottom:"5px"}}>
+              <p style={{margin:0, fontWeight:"600", color:"#3F51B5"}}>New Pharma</p>
+              <Divider style={{margin:"2px 0px"}}/>
+              <p style={{margin:0}}>Shop Owner : Mr. Owner </p>
+              <p style={{margin:0, fontSize:".8rem", color:"gray"}}>Address : Dhaka, Narsingdi, Monohardi</p>
+            </Card>
+            </NavLink>
+          );
+        })}
+      </div>
     </div>
-  </div>
-  )
-}
-export default Chemists
+  );
+};
+export default Chemists;
