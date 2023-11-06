@@ -423,6 +423,13 @@ function Header({
               </div>
             </div>
           </Drawer>
+          <Link to="/dashboard" className="btn-sign-in">
+            <img
+              style={{ width: "26px", height: "auto", objectFit:"contain" }}
+              src="/icons/home.png"
+            />
+            {/* <span>Sign in</span> */}
+          </Link>
           <Link to="/mio/profile" className="btn-sign-in">
             <img
               style={{ width: "26px", height: "auto", objectFit:"contain" }}
