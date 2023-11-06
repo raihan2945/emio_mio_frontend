@@ -12,6 +12,7 @@ import "./assets/styles/main.css";
 import "./assets/styles/responsive.css";
 
 import Doctors from "./pages/Doctor/Doctors";
+import DoctorProfile from "./pages/Doctor/Profile";
 import Mio from "./pages/Mio/Mio";
 import Chemists from "./pages/Chemist/Chemists";
 import Promotion from "./pages/Promotion/Promotion";
@@ -30,7 +31,7 @@ function App() {
         <Main>
           <Route exact path="/" component={Home} />
           <Route exact path="/dashboard" component={Home} />
-          <Route exact path="/doctors/profile" component={Doctors} />
+          <Route exact path="/doctors/profile" component={DoctorProfile} />
           <Route exact path="/doctors" component={Doctors} />
           <Route exact path="/mio/profile" component={MIOProfile} />
           <Route exact path="/mio" component={Mio} />
