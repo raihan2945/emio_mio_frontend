@@ -19,6 +19,7 @@ import Survey from "./pages/Survey/Survey";
 import Campaign from "./pages/Promotion/Campaign";
 import Drafts from "./pages/Promotion/Drafts";
 import MIOProfile from "./pages/Mio/Profile";
+import ChemistProfile from "./pages/Chemist/Profile";
 
 function App() {
   return (
@@ -33,7 +34,7 @@ function App() {
           <Route exact path="/doctors" component={Doctors} />
           <Route exact path="/mio/profile" component={MIOProfile} />
           <Route exact path="/mio" component={Mio} />
-          <Route exact path="/chemists/profile:id" component={Chemists} />
+          <Route exact path="/chemists/profile" component={ChemistProfile} />
           <Route exact path="/chemists" component={Chemists} />
           <Route exact path="/promotion" component={Promotion} />
           <Route exact path="/drafts" component={Drafts} />

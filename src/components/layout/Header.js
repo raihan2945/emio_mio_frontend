@@ -275,8 +275,8 @@ function Header({
       {/* <div className="setting-drwer" onClick={showDrawer}>
         {setting}
       </div> */}
-      <Row gutter={[24, 0]}>
-        <Col span={24} md={6}>
+      <Row gutter={[0, 0]}>
+        <Col span={0} md={6}>
           {/* <Breadcrumb>
             <Breadcrumb.Item>
               <NavLink to="/">Pages</NavLink>
@@ -426,15 +426,15 @@ function Header({
           <Link to="/mio/profile" className="btn-sign-in">
             <img
               style={{ width: "26px", height: "auto", objectFit:"contain" }}
-              src="icons/profile.png"
+              src="/icons/profile.png"
             />
             {/* <span>Sign in</span> */}
           </Link>
-          <Input
+          {/* <Input
             className="header-search"
             placeholder="Type here..."
             prefix={<SearchOutlined />}
-          />
+          /> */}
         </Col>
       </Row>
     </>

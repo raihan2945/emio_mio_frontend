@@ -97,7 +97,7 @@ function Main({ children }) {
       <Layout>
         {fixed ? (
           <Affix>
-            <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
+            <AntHeader style={{padding:"5px"}} className={`${fixed ? "ant-header-fixed" : ""}`}>
               <Header
                 onPress={openDrawer}
                 name={pathname}

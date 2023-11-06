@@ -179,7 +179,7 @@ const Chemists = () => {
 
   return (
     <div>
-    <FilterSection userType="chemist" />
+    {/* <FilterSection userType="chemist" /> */}
     <div className="table-responsive">
       <Table
         columns={columns}
