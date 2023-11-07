@@ -1,9 +1,9 @@
-import React from 'react'
-import { Button, Space, Table, Tag } from "antd";
+import React from "react";
+import { Button, Space, Table, Tag, Card, Divider } from "antd";
 import FilterSection from "../../views/Filter/FilterSection";
+import { NavLink } from "react-router-dom";
 
 const Doctors = () => {
-
   const columns = [
     {
       title: "ID",
@@ -87,7 +87,7 @@ const Doctors = () => {
       name: "John Doe",
       address: "123 Main St",
       mobile: "555-555-5555",
-      designation: "Manager"
+      designation: "Manager",
     },
     {
       id: 2,
@@ -95,7 +95,7 @@ const Doctors = () => {
       name: "Jane Smith",
       address: "456 Elm St",
       mobile: "555-555-5556",
-      designation: "Salesperson"
+      designation: "Salesperson",
     },
     {
       id: 3,
@@ -103,7 +103,7 @@ const Doctors = () => {
       name: "Robert Johnson",
       address: "789 Oak St",
       mobile: "555-555-5557",
-      designation: "Supervisor"
+      designation: "Supervisor",
     },
     {
       id: 4,
@@ -111,7 +111,7 @@ const Doctors = () => {
       name: "Sarah Davis",
       address: "101 Pine St",
       mobile: "555-555-5558",
-      designation: "Assistant Manager"
+      designation: "Assistant Manager",
     },
     {
       id: 5,
@@ -119,7 +119,7 @@ const Doctors = () => {
       name: "Michael Brown",
       address: "222 Cedar St",
       mobile: "555-555-5559",
-      designation: "Clerk"
+      designation: "Clerk",
     },
     {
       id: 6,
@@ -127,7 +127,7 @@ const Doctors = () => {
       name: "Lisa Wilson",
       address: "333 Birch St",
       mobile: "555-555-5560",
-      designation: "Associate"
+      designation: "Associate",
     },
     {
       id: 7,
@@ -135,7 +135,7 @@ const Doctors = () => {
       name: "David Lee",
       address: "444 Redwood St",
       mobile: "555-555-5561",
-      designation: "Technician"
+      designation: "Technician",
     },
     {
       id: 8,
@@ -143,7 +143,7 @@ const Doctors = () => {
       name: "Emily Miller",
       address: "555 Maple St",
       mobile: "555-555-5562",
-      designation: "Coordinator"
+      designation: "Coordinator",
     },
     {
       id: 9,
@@ -151,7 +151,7 @@ const Doctors = () => {
       name: "William Harris",
       address: "666 Spruce St",
       mobile: "555-555-5563",
-      designation: "Engineer"
+      designation: "Engineer",
     },
     {
       id: 10,
@@ -159,23 +159,60 @@ const Doctors = () => {
       name: "Jennifer Jones",
       address: "777 Walnut St",
       mobile: "555-555-5564",
-      designation: "Analyst"
-    }
+      designation: "Analyst",
+    },
   ];
 
   return (
     <div>
-    <FilterSection userType="doctor"/>
-    <div className="table-responsive">
-      <Table
+      {/* <FilterSection userType="doctor" /> */}
+      <h5 style={{ color: "#3F51B5" }}>Doctors </h5>
+      <div className="table-responsive">
+        {/* <Table
         columns={columns}
         dataSource={data}
         pagination={true}
         className="ant-border-space"
-      />
+      /> */}
+        {data?.map((d) => {
+          return (
+            <NavLink to="/doctors/profile">
+              <Card style={{ padding: "0", marginBottom: "5px", cursor:"pointer"}}>
+                <div
+                  style={{ display: "flex", alignItems: "start", gap: "15px" }}
+                >
+                  <div>
+                    <img
+                      style={{ height: "45px", width: "45px" }}
+                      src="/icons/doctor.png"
+                    />
+                  </div>
+                  <div>
+                    <p
+                      style={{ margin: 0, fontWeight: "600", color: "#282A36" }}
+                    >
+                     id : #1
+                    </p>
+                    <p
+                      style={{ margin: 0, fontWeight: "600", color: "#3F51B5" }}
+                    >
+                      Mr. Prof Doctor
+                    </p>
+                    {/* <Divider style={{ margin: "2px 0px" }} /> */}
+                    {/* <p style={{ margin: 0 }}>Shop Owner : Mr. Owner </p> */}
+                   
+                    <p style={{ margin: 0, fontSize: ".8rem", color: "gray" }}>
+                      Chamber : Dhaka, Narsingdi, Monohardi
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            </NavLink>
+          );
+        })}
+      </div>
     </div>
-  </div>
-  )
-}
+  );
+};
 
-export default Doctors
+export default Doctors;
