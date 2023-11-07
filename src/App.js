@@ -21,6 +21,8 @@ import Campaign from "./pages/Promotion/Campaign";
 import Drafts from "./pages/Promotion/Drafts";
 import MIOProfile from "./pages/Mio/Profile";
 import ChemistProfile from "./pages/Chemist/Profile";
+import Campaigns from "./pages/Campaigns/Campaigns";
+import CampaignDetails from "./pages/Campaigns/CampaignDetails";
 
 function App() {
   return (
@@ -39,7 +41,8 @@ function App() {
           <Route exact path="/chemists" component={Chemists} />
           <Route exact path="/promotion" component={Promotion} />
           <Route exact path="/drafts" component={Drafts} />
-          <Route exact path="/campaigns" component={Campaign} />
+          <Route exact path="/campaigns/details" component={CampaignDetails} />
+          <Route exact path="/campaigns" component={Campaigns} />
           <Route exact path="/survey" component={Survey} />
           {/* <Redirect from="*" to="/dashboard" /> */}
           <Route exact path="/tables" component={Tables} />

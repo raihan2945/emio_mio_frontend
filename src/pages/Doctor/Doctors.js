@@ -189,17 +189,20 @@ const Doctors = () => {
                   </div>
                   <div>
                     <p
+                      style={{ margin: 0, fontWeight: "600", color: "#282A36" }}
+                    >
+                     id : #1
+                    </p>
+                    <p
                       style={{ margin: 0, fontWeight: "600", color: "#3F51B5" }}
                     >
                       Mr. Prof Doctor
                     </p>
                     {/* <Divider style={{ margin: "2px 0px" }} /> */}
                     {/* <p style={{ margin: 0 }}>Shop Owner : Mr. Owner </p> */}
+                   
                     <p style={{ margin: 0, fontSize: ".8rem", color: "gray" }}>
-                      Hospital : Labaid Hospital
-                    </p>
-                    <p style={{ margin: 0, fontSize: ".8rem", color: "gray" }}>
-                      Address : Dhaka, Narsingdi, Monohardi
+                      Chamber : Dhaka, Narsingdi, Monohardi
                     </p>
                   </div>
                 </div>
