@@ -172,21 +172,7 @@ const BasicInfo = () => {
         >
           <DatePicker placeholder="Date of birth" style={{ width: "100%" }} />
         </Form.Item>
-
-        <Form.Item
-          style={{ marginBottom: "10px" }}
-          label={<p style={{ margin: 0, padding: 0 }}>Is Verified : </p>}
-          name="is_verified"
-          labelCol={{ span: 1 }}
-          wrapperCol={{ span: 6 }}
-          // rules={[{ required: true, message: "Please enter your name!" }]}
-        >
-          <Select defaultValue="true">
-            <Option value="true">True</Option>
-            <Option value="false">False</Option>
-          </Select>
-        </Form.Item>
-
+        
         <Form.Item
           style={{ marginBottom: "10px" }}
           // label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
