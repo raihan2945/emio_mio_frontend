@@ -1,39 +1,19 @@
 import apiSlice from "../api";
-import { setUser } from "./userSlice";
 import { store } from "../../store";
 
 const token = store.getState()?.auth?.accessToken;
 
-const userApi = apiSlice.injectEndpoints({
+const doctorApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getUser: builder.query({
-      query: (data) => ({
-        url: "/api/v1/mio/profile",
+    getDoctors: builder.query({
+      query: (id) => ({
+        url: `/api/v1/doctors/get_by_mio/${id}`,
         method: "GET",
         headers: {
           authorization: `Bearer ${token}`,
         },
       }),
-      async onQueryStarted(arg, { queryFulfilled, dispatch }) {
-        try {
-          const result = await queryFulfilled;
-
-          dispatch(setUser({ user: result.data.data }));
-        } catch (err) {
-          // do nothing
-        }
-      },
-      invalidatesTags: ["User"],
-    }),
-    getProfile: builder.query({
-      query: (data) => ({
-        url: "/api/v1/mio/profile",
-        method: "GET",
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }),
-      invalidatesTags: ["User"],
+      invalidatesTags: ["Doctor"],
     }),
     // userRegister: builder.mutation({
     //   query: (data) => ({
@@ -83,5 +63,5 @@ const userApi = apiSlice.injectEndpoints({
   overrideExisting: true,
 });
 
-export const { useGetUserQuery, useGetProfileQuery } = userApi;
-export default userApi;
+export const { useGetDoctorsQuery } = doctorApi;
+export default doctorApi;

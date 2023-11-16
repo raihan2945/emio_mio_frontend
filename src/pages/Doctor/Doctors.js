@@ -2,8 +2,21 @@ import React from "react";
 import { Button, Space, Table, Tag, Card, Divider } from "antd";
 import FilterSection from "../../views/Filter/FilterSection";
 import { NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useGetDoctorsQuery } from "../../redux/features/doctor/doctorApi";
+import { useState } from "react";
+import { useEffect } from "react";
 
 const Doctors = () => {
+
+  const user= useSelector(state=>state?.user?.data);
+
+  const [doctors, setDoctors] = useState([])
+
+  const {data:getDoctors} =useGetDoctorsQuery(user?.work_area_t);
+
+  console.log("Get doctors are : ", getDoctors)
+
   const columns = [
     {
       title: "ID",
@@ -163,6 +176,12 @@ const Doctors = () => {
     },
   ];
 
+  useEffect(()=>{
+    if(getDoctors?.data){
+      setDoctors(getDoctors?.data)
+    }
+  },[getDoctors])
+
   return (
     <div>
       {/* <FilterSection userType="doctor" /> */}
@@ -174,7 +193,7 @@ const Doctors = () => {
         pagination={true}
         className="ant-border-space"
       /> */}
-        {data?.map((d) => {
+        {doctors?.map((d) => {
           return (
             <NavLink to="/doctors/profile">
               <Card style={{ padding: "0", marginBottom: "5px", cursor:"pointer"}}>
@@ -191,18 +210,18 @@ const Doctors = () => {
                     <p
                       style={{ margin: 0, fontWeight: "600", color: "#282A36" }}
                     >
-                     id : #1
+                     id : #{d.dr_master_id}
                     </p>
                     <p
                       style={{ margin: 0, fontWeight: "600", color: "#3F51B5" }}
                     >
-                      Mr. Prof Doctor
+                      {d?.title}{d?.doctor_name1}
                     </p>
                     {/* <Divider style={{ margin: "2px 0px" }} /> */}
                     {/* <p style={{ margin: 0 }}>Shop Owner : Mr. Owner </p> */}
                    
                     <p style={{ margin: 0, fontSize: ".8rem", color: "gray" }}>
-                      Chamber : Dhaka, Narsingdi, Monohardi
+                      Chamber :{d?.ch_addr1}
                     </p>
                   </div>
                 </div>
