@@ -1,4 +1,8 @@
-import { Switch, Route, Redirect } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useGetUserQuery } from "./redux/features/user/userApi";
+
 import Home from "./pages/Home";
 import Tables from "./pages/Tables";
 import Billing from "./pages/Billing";
@@ -23,34 +27,45 @@ import MIOProfile from "./pages/Mio/Profile";
 import ChemistProfile from "./pages/Chemist/Profile";
 import Campaigns from "./pages/Campaigns/Campaigns";
 import CampaignDetails from "./pages/Campaigns/CampaignDetails";
+import PrivateOutlet from "./components/routing/privateOutlet";
+import PrivateRoute from "./components/routing/privateRoute";
 
 function App() {
+  const accessToken = useSelector((state) => state?.auth?.accessToken);
+
+  const { data } = useGetUserQuery();
+
   return (
     <div className="App">
-      <Switch>
-        <Route path="/sign-up" exact component={SignUp} />
-        <Route path="/sign-in" exact component={SignIn} />
-        <Main>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/dashboard" component={Home} />
-          <Route exact path="/doctors/profile" component={DoctorProfile} />
-          <Route exact path="/doctors" component={Doctors} />
-          <Route exact path="/mio/profile" component={MIOProfile} />
-          <Route exact path="/mio" component={Mio} />
-          <Route exact path="/chemists/profile" component={ChemistProfile} />
-          <Route exact path="/chemists" component={Chemists} />
-          <Route exact path="/promotion" component={Promotion} />
-          <Route exact path="/drafts" component={Drafts} />
-          <Route exact path="/campaigns/details" component={CampaignDetails} />
-          <Route exact path="/campaigns" component={Campaigns} />
-          <Route exact path="/survey" component={Survey} />
-          {/* <Redirect from="*" to="/dashboard" /> */}
-          <Route exact path="/tables" component={Tables} />
-        </Main>
-      </Switch>
+      <Routes>
+        <Route path="/sign-up" exact element={<SignUp />} />
+        <Route path="/sign-in" exact element={<SignIn />} />
+
+        <Route
+          exact
+          path="/"
+          element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          }
+        />
+        <Route exact path="/*" element={<PrivateOutlet />}>
+          <Route path="dashboard" element={<Home />} />
+          <Route path="doctors/profile" element={<DoctorProfile />} />
+          <Route path="doctors" element={<Doctors />} />
+          <Route path="mio/profile" element={<MIOProfile />} />
+          <Route path="mio" element={Mio} />
+          <Route path="chemists/profile" element={<ChemistProfile />} />
+          <Route path="chemists" element={<Chemists />} />
+          <Route path="promotion" element={<Promotion />} />
+          <Route path="campaigns/details" element={<CampaignDetails />} />
+          <Route path="campaigns" element={<Campaigns />} />
+          <Route path="survey" element={<Survey />} />
+        </Route>
+      </Routes>
     </div>
   );
 }
 
 export default App;
-
