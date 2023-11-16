@@ -202,8 +202,6 @@ function Sidenav({ color }) {
           Template
         </Menu.Item> */}
 
-        
-
         {/* <Menu.Item key="2">
           <NavLink to="/tables">
             <span
@@ -217,7 +215,9 @@ function Sidenav({ color }) {
             <span className="label">Tables</span>
           </NavLink>
         </Menu.Item> */}
+      
       </Menu>
+
     </>
   );
 }
