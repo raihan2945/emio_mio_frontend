@@ -200,15 +200,15 @@ const Doctors = () => {
                 <div
                   style={{ display: "flex", alignItems: "start", gap: "15px" }}
                 >
-                  <div>
+                  <div style={{flex:1}}>
                     <img
                       style={{ height: "45px", width: "45px" }}
                       src="/icons/doctor.png"
                     />
                   </div>
-                  <div>
+                  <div style={{flex:5}}>
                     <p
-                      style={{ margin: 0, fontWeight: "600", color: "#282A36" }}
+                      style={{ margin: 0, fontWeight: "500", color: "#7F7F7F" }}
                     >
                      id : #{d.dr_master_id}
                     </p>
@@ -220,8 +220,8 @@ const Doctors = () => {
                     {/* <Divider style={{ margin: "2px 0px" }} /> */}
                     {/* <p style={{ margin: 0 }}>Shop Owner : Mr. Owner </p> */}
                    
-                    <p style={{ margin: 0, fontSize: ".8rem", color: "gray" }}>
-                      Chamber :{d?.ch_addr1}
+                    <p style={{ margin: 0, fontSize: ".8rem", color: "#383838" }}>
+                      <strong>Chamber</strong> :{d?.ch_addr1}
                     </p>
                   </div>
                 </div>

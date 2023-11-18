@@ -35,53 +35,26 @@ const userApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
-    // userRegister: builder.mutation({
-    //   query: (data) => ({
-    //     url: '/api/v1/mio/sign-in',
-    //     method: 'POST',
-    //     body: data,
-    //   }),
-    //   async onQueryStarted(arg, { queryFulfilled, dispatch }) {
-    //     try {
-    //       const result = await queryFulfilled;
 
-    //       dispatch(
-    //         userLoggedIn({
-    //           accessToken: result.data.jwt,
-    //           user: result.data.user,
-    //         })
-    //       );
-    //     } catch (err) {
-    //       // do nothing
-    //     }
-    //   },
-    //   invalidatesTags: ['User'],
-    // }),
-    // userLogin: builder.mutation({
-    //   query: (data) => ({
-    //     url: '/api/v1/mio/sign-in',
-    //     method: 'POST',
-    //     body: data,
-    //   }),
-    //   async onQueryStarted(arg, { queryFulfilled, dispatch }) {
-    //     try {
-    //       const result = await queryFulfilled;
+    updateUser: builder.mutation({
+      query: ({ id, data }) => {
+        return {
+          url: `/api/v1/mio/${id}`,
+          method: "PATCH",
+          body: data,
+          headers: {
+            authorization: `Bearer ${token}`
+          },
+        };
+      },
 
-    //       dispatch(
-    //         userLoggedIn({
-    //           accessToken: result.data.data.access_token,
-    //           user: result.data.user,
-    //         })
-    //       );
-    //     } catch (err) {
-    //       // do nothing
-    //     }
-    //   },
-    //   invalidatesTags: ['User'],
-    // }),
+      invalidatesTags: ["User"],
+      providesTags: ["User"],
+    }),
   }),
   overrideExisting: true,
 });
 
-export const { useGetUserQuery, useGetProfileQuery } = userApi;
+export const { useGetUserQuery, useGetProfileQuery, useUpdateUserMutation } =
+  userApi;
 export default userApi;
