@@ -56,7 +56,7 @@ function App() {
           <Route path="doctors" element={<Doctors />} />
           <Route path="mio/profile" element={<MIOProfile />} />
           <Route path="mio" element={Mio} />
-          <Route path="chemists/profile" element={<ChemistProfile />} />
+          <Route path="chemists/:id" element={<ChemistProfile />} />
           <Route path="chemists" element={<Chemists />} />
           <Route path="promotion" element={<Promotion />} />
           <Route path="campaigns/details" element={<CampaignDetails />} />
