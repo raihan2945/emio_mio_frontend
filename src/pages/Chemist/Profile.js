@@ -167,6 +167,7 @@ const Profile = () => {
     contact_person,
     street1,
     other_mobile,
+    upazila
   }) => {
     const form = new FormData();
 
@@ -178,6 +179,7 @@ const Profile = () => {
       street1,
       contact_person,
       other_mobile,
+      upazila
     };
 
     Object.keys(payload).forEach((key) => {
@@ -206,8 +208,8 @@ const Profile = () => {
     updateChemist({ data: form });
   };
 
-  console.log("error is : ", updateError);
-  // console.log("profile is : ", profile?.division);
+  // console.log("error is : ", updateError);
+  console.log("profile is : ", profile);
 
   return (
     <Card style={{ padding: "0px 10px" }}>
