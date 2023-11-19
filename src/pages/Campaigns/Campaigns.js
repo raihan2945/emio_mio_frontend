@@ -68,6 +68,7 @@ const Campaigns = () => {
               <p style={{margin:0, fontWeight:"600", color:"#3F51B5"}}>{d.campaign_name}</p>
               <Divider style={{margin:"2px 0px"}}/>
               <p style={{margin:0}}>Medium : {d.medium} </p>
+              <p style={{margin:0, fontSize:".8rem", color:"gray"}}>User Type : {d.user_type}</p>
               <p style={{margin:0, fontSize:".8rem", color:"gray"}}>Status : {d.status}</p>
             </Card>
             </NavLink>
