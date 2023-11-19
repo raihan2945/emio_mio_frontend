@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useForm } from "react-hook-form";
 import {
   Button,
   Card,
@@ -16,41 +17,76 @@ import { BsFillCheckCircleFill } from "react-icons/bs";
 import { SettingOutlined, CaretRightOutlined } from "@ant-design/icons";
 import "../../pages/Doctor/profile.css";
 import Footer from "./Footer";
+import MajorInfo from "./MajorInfo";
+import {
+  useGetDistrictsQuery,
+  useGetDivisonsQuery,
+  useGetUpazilasQuery,
+} from "../../redux/features/locations/locationApi";
+import { useDoctorUpdatePutMutation } from "../../redux/features/doctor/doctorApi";
+import dayjs from "dayjs";
+import moment from "moment";
+import baseUrl from "../../utils/baseUrl";
 
-const { Panel } = Collapse;
 const { Option } = Select;
-const { TabPane } = Tabs;
 
-const BasicInfo = () => {
+const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const [image, setImage] = useState(null);
   const [previewImage, setPreviewImage] = useState();
   const fileInputRef = useRef();
 
-  const [expandIconPosition, setExpandIconPosition] = useState("start");
+  const dateFormat = "YYYY-MM-DD";
 
-  const success = () => {
-    messageApi.open({
-      type: "success",
-      content: <div style={{}}> Doctor data is updated</div>,
-      className: "custom-class",
-      style: {
-        marginTop: "10vh",
-      },
-      duration: 2,
-      icon: (
-        <BsFillCheckCircleFill
-          style={{ color: "green", fontSize: "1.5rem", marginBottom: ".5rem" }}
-        />
-      ),
-    });
-  };
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = useForm();
+
+  const [divisions, setDivisons] = useState([]);
+  const [selectedDivision, setSelectedDivision] = useState(null);
+  const [selectedDistrict, setSelectedDistrict] = useState(null);
+
+  const [
+    updateDoctor,
+    { status: updateStatus, error: updateError, isSuccess: updateSuccess },
+  ] = useDoctorUpdatePutMutation();
+
+  const { data: getDivisions, refetch: divisionRefetch } =
+    useGetDivisonsQuery();
+  const { data: getDistricts, refetch: districtRefetch } = useGetDistrictsQuery(
+    selectedDivision?.value || doctor?.division
+  );
+  const { data: getUpazilas, refetch: upazilaRefectch } = useGetUpazilasQuery(
+    selectedDistrict?.value || doctor?.district
+  );
 
   const handleImageSelected = (e) => {
     const selectedFile = e.target.files[0];
     setImage(selectedFile);
   };
+
+  useEffect(() => {
+    if (updateError) {
+      if (updateError.status == 400) {
+        updateError.data.error.map((er) => {
+          return error(er);
+        });
+      }
+      if (updateError.status == 500) {
+        error("Server Error : 500");
+      }
+    }
+    if (updateSuccess) {
+      doctorRefetch();
+      success("Profile updated successfully");
+    }
+  }, [updateStatus]);
 
   useEffect(() => {
     if (image) {
@@ -62,252 +98,403 @@ const BasicInfo = () => {
     }
   }, [image]);
 
+  useEffect(() => {
+    if (getDivisions) {
+      setDivisons(getDivisions?.data);
+    }
+  }, [getDivisions]);
+
+  useEffect(() => {
+    doctor &&
+      Object.keys(doctor).forEach((key) => {
+        setValue(key, doctor[key]);
+      });
+  }, [doctor]);
+
   const onFinish = () => {};
+  const onSubmit = () => {
+    const formValues = getValues();
 
-  const genExtra = () => (
-    <SettingOutlined
-      onClick={(event) => {
-        // If you don't want click extra trigger collapse, you can prevent this:
-        event.stopPropagation();
-      }}
-    />
-  );
+    const {
+      full_name,
+      gender,
+      address,
+      bio,
+      dob,
+      life_family,
+      title,
+      website_url,
+      whatsapp,
+      years_of_experience,
+      upazila,
+    } = formValues;
+
+    const payload = {
+      full_name,
+      gender,
+      address,
+      bio,
+      dob,
+      life_family,
+      title,
+      website_url,
+      whatsapp,
+      years_of_experience,
+      upazila,
+    };
+
+    const form = new FormData();
+    const submitData = {};
+
+    Object.keys(payload).forEach((key) => {
+      if (formValues[key]) {
+        form.append(key, formValues[key]);
+        submitData[key] = formValues[key];
+      }
+    });
+
+    console.log("submit data is : ", submitData);
+
+    if (selectedDivision) {
+      form.append("division", selectedDivision?.children);
+    }
+    if (selectedDistrict) {
+      form.append("district", selectedDistrict?.children);
+    }
+    if (id || doctor) {
+      form.append("id", id || doctor?.id);
+    }
+    if (image) {
+      form.append("profile_photo", image);
+    }
+
+    updateDoctor({ id: doctor?.id, data: form });
+  };
+
   return (
-    <Form layout="vertical">
-      <div title="Basic Information" style={{ padding: "0px 10px" }}>
-        <div>
-          <p style={{ margin: 0, color: "gray" }}>Profile Photo : </p>
-          <div
-            style={{
-              margin: ".5rem 0rem",
-              display: "flex",
-              alignItems: "end",
-              gap: "1rem",
-            }}
-          >
-            <div
-              style={{
-                width: "6rem",
-                padding: ".2rem",
-                borderRadius: "5px",
-                border: "1px solid gray",
-              }}
-            >
-              <img
-                src={previewImage || "/icons/profile.png"}
+    <div>
+      <MajorInfo
+        id={id}
+        doctor={doctor}
+        doctorRefetch={doctorRefetch}
+        success={success}
+        error={error}
+        warning={warning}
+      />
+
+      {(doctor?.bmdc_no || doctor?.mobile || doctor?.email) && (
+        <Form layout="vertical" style={{ marginTop: "1rem" }}>
+          <div title="Basic Information" style={{ padding: "0px 10px" }}>
+            <div>
+              <p style={{ margin: 0, color: "gray" }}>Profile Photo : </p>
+              <div
                 style={{
-                  width: "100%",
-                  height: "6rem",
-                  objectFit: "cover",
+                  margin: ".5rem 0rem",
+                  display: "flex",
+                  alignItems: "end",
+                  gap: "1rem",
                 }}
-                alt="Profile"
-              />
+              >
+                <div
+                  style={{
+                    width: "6rem",
+                    padding: ".2rem",
+                    borderRadius: "5px",
+                    border: "1px solid gray",
+                  }}
+                >
+                  <img
+                    src={previewImage ? previewImage : doctor?.profile_photo ? `${baseUrl}/uploads/${doctor?.profile_photo}` :  "/icons/profile.png"}
+                    style={{
+                      width: "100%",
+                      height: "6rem",
+                      objectFit: "cover",
+                    }}
+                    alt="Profile"
+                  />
+                </div>
+                <input
+                  onChange={handleImageSelected}
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                  type="file"
+                  accept="/*image/"
+                />
+                <Button
+                  size="small"
+                  onClick={() => fileInputRef.current.click()}
+                  style={{ marginTop: ".5rem" }}
+                >
+                  <AiOutlineCloudUpload />
+                  Upload
+                </Button>
+              </div>
             </div>
-            <input
-              onChange={handleImageSelected}
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              type="file"
-              accept="/*image/"
-            />
-            <Button
-              size="small"
-              onClick={() => fileInputRef.current.click()}
-              style={{ marginTop: ".5rem" }}
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Title: </p>}
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
             >
-              <AiOutlineCloudUpload />
-              Upload
-            </Button>
+              <input {...register("title")} type="text" class="form-control" />
+            </Form.Item>
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Full Name : </p>}
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <input
+                {...register("full_name")}
+                type="text"
+                class="form-control"
+              />
+            </Form.Item>
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Whatsapp : </p>}
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <input
+                {...register("whatsapp")}
+                type="number"
+                class="form-control"
+              />
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
+              // name="gender"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              value={doctor?.gender}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <Select
+                onChange={(value) => setValue("gender", value)}
+                defaultValue={doctor?.gender}
+              >
+                <Option value="male">Male</Option>
+                <Option value="female">Female</Option>
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Date of Birth : </p>}
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <DatePicker
+                // defaultValue={dayjs(moment(watch('dob')).format("YYYY-MM-DD"))}
+                placeholder="Date of birth"
+                style={{ width: "100%" }}
+                allowClear={false}
+                onChange={(date, dateString) => {
+                  console.log('date is : ', date)
+                  setValue("dob", date)}}
+              />
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Bio : </p>}
+              // name="bio"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <textarea {...register("bio")} class="form-control" />
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Address : </p>}
+              // name="address"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <input
+                type="text"
+                {...register("address")}
+                class="form-control"
+              />
+            </Form.Item>
+
+            {/* <Form.Item
+              style={{ marginBottom: "10px" }}
+              // label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
+              name="recognitions"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <Input placeholder="Recognitions" style={{ fontWeight: "400" }} />
+            </Form.Item> */}
+
+            {/* <Form.Item
+              style={{ marginBottom: "10px" }}
+              // label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
+              name="memberships"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <Input placeholder="Memberships" style={{ fontWeight: "400" }} />
+            </Form.Item> */}
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Family Life : </p>}
+              // name="life_family"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <textarea
+                {...register("life_family")}
+                class="form-control"
+                style={{ fontWeight: "400" }}
+              />
+            </Form.Item>
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={
+                <p style={{ margin: 0, padding: 0 }}>Years of Experience : </p>
+              }
+              // name="years_of_experience"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <input
+                type="number"
+                style={{ fontWeight: "400" }}
+                class="form-control"
+                {...register("years_of_experience")}
+              />
+            </Form.Item>
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Website : </p>}
+              // name="website_url"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <input
+                type="text"
+                class="form-control"
+                style={{ fontWeight: "400" }}
+                {...register("website_url")}
+              />
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Divison : </p>}
+              // name="division"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+            >
+              <Select
+                style={{ width: "100%" }}
+                onChange={(value, option) => {
+                  setSelectedDivision(option);
+                }}
+                value={`${
+                  selectedDivision?.children ||
+                  doctor?.division ||
+                  "Select division"
+                }`}
+              >
+                {divisions.map((d) => {
+                  return (
+                    <Option key={d.name} value={d.name}>
+                      {d.name}
+                    </Option>
+                  );
+                })}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>District : </p>}
+              // name="website_url"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <Select
+                style={{ width: "100%" }}
+                onChange={(value, option) => {
+                  setSelectedDistrict(option);
+                }}
+                value={`${
+                  selectedDistrict?.children ||
+                  doctor?.district ||
+                  "Select district"
+                }`}
+              >
+                {Array.isArray(getDistricts?.data) &&
+                  getDistricts?.data.map((d) => {
+                    return (
+                      <Option key={d.id} value={d.name}>
+                        {d.name}
+                      </Option>
+                    );
+                  })}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Upazila : </p>}
+              // name="website_url"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <Select
+                style={{ width: "100%" }}
+                onChange={(value, option) => {
+                  setValue("upazila", value);
+                }}
+                value={`${
+                  watch("upazila") || doctor?.upazila || "Select Upazila"
+                }`}
+              >
+                {Array.isArray(getUpazilas?.data) &&
+                  getUpazilas?.data.map((d) => {
+                    return (
+                      <Option key={d.id} value={d.name}>
+                        {d.name}
+                      </Option>
+                    );
+                  })}
+              </Select>
+            </Form.Item>
+
+            <Form.Item style={{ textAlign: "center", marginTop: "1rem" }}>
+              <Button onClick={() => onSubmit()} type="primary">
+                Save
+              </Button>
+            </Form.Item>
           </div>
-        </div>
-
-        <Form.Item
-          style={{ marginBottom: "5px", marginTop: "15px" }}
-          // label="Full Name"
-          name="shop_name"
-          rules={[{ required: true, message: "Please enter your name!" }]}
-        >
-          <Input placeholder="Full Name" style={{ fontWeight: "400" }} />
-        </Form.Item>
-        <Form.Item
-          style={{ marginBottom: "10px" }}
-          label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
-          name="gender"
-          labelCol={{ span: 1 }}
-          wrapperCol={{ span: 6 }}
-          // rules={[{ required: true, message: "Please enter your name!" }]}
-        >
-          <Select defaultValue="male">
-            <Option value="male">Male</Option>
-            <Option value="female">Female</Option>
-          </Select>
-        </Form.Item>
-        <Form.Item
-          style={{ marginBottom: "10px" }}
-          // label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
-          name="mobile"
-          labelCol={{ span: 1 }}
-          wrapperCol={{ span: 6 }}
-          // rules={[{ required: true, message: "Please enter your name!" }]}
-        >
-          <Input placeholder="Mobile" style={{ fontWeight: "400" }} />
-        </Form.Item>
-        <Form.Item
-          style={{ marginBottom: "10px" }}
-          // label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
-          name="email"
-          labelCol={{ span: 1 }}
-          wrapperCol={{ span: 6 }}
-          // rules={[{ required: true, message: "Please enter your name!" }]}
-        >
-          <Input placeholder="email" style={{ fontWeight: "400" }} />
-        </Form.Item>
-        <Form.Item
-          style={{ marginBottom: "10px" }}
-          // label={<p style={{ margin: 0, padding: 0 }}>Date of birth : </p>}
-          name="birthday"
-          labelCol={{ span: 1 }}
-          wrapperCol={{ span: 6 }}
-          // rules={[{ required: true, message: "Please enter your name!" }]}
-        >
-          <DatePicker placeholder="Date of birth" style={{ width: "100%" }} />
-        </Form.Item>
-        
-        <Form.Item
-          style={{ marginBottom: "10px" }}
-          // label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
-          name="bio"
-          labelCol={{ span: 1 }}
-          wrapperCol={{ span: 6 }}
-          // rules={[{ required: true, message: "Please enter your name!" }]}
-        >
-          <Input placeholder="Bio" style={{ fontWeight: "400" }} />
-        </Form.Item>
-
-        <Form.Item
-          style={{ marginBottom: "10px" }}
-          // label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
-          name="address"
-          labelCol={{ span: 1 }}
-          wrapperCol={{ span: 6 }}
-          // rules={[{ required: true, message: "Please enter your name!" }]}
-        >
-          <Input placeholder="Address" style={{ fontWeight: "400" }} />
-        </Form.Item>
-
-        <Form.Item
-          style={{ marginBottom: "10px" }}
-          // label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
-          name="recognitions"
-          labelCol={{ span: 1 }}
-          wrapperCol={{ span: 6 }}
-          // rules={[{ required: true, message: "Please enter your name!" }]}
-        >
-          <Input placeholder="Recognitions" style={{ fontWeight: "400" }} />
-        </Form.Item>
-
-        <Form.Item
-          style={{ marginBottom: "10px" }}
-          // label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
-          name="memberships"
-          labelCol={{ span: 1 }}
-          wrapperCol={{ span: 6 }}
-          // rules={[{ required: true, message: "Please enter your name!" }]}
-        >
-          <Input placeholder="Memberships" style={{ fontWeight: "400" }} />
-        </Form.Item>
-
-        <Form.Item
-          style={{ marginBottom: "10px" }}
-          // label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
-          name="life_family"
-          labelCol={{ span: 1 }}
-          wrapperCol={{ span: 6 }}
-          // rules={[{ required: true, message: "Please enter your name!" }]}
-        >
-          <Input placeholder="Life Family" style={{ fontWeight: "400" }} />
-        </Form.Item>
-        <Form.Item
-          style={{ marginBottom: "10px" }}
-          // label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
-          name="years_of_experience"
-          labelCol={{ span: 1 }}
-          wrapperCol={{ span: 6 }}
-          // rules={[{ required: true, message: "Please enter your name!" }]}
-        >
-          <Input
-            placeholder="Years Of Experience"
-            style={{ fontWeight: "400" }}
-          />
-        </Form.Item>
-        <Form.Item
-          style={{ marginBottom: "10px" }}
-          // label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
-          name="location"
-          labelCol={{ span: 1 }}
-          wrapperCol={{ span: 6 }}
-          // rules={[{ required: true, message: "Please enter your name!" }]}
-        >
-          <Input placeholder="Location" style={{ fontWeight: "400" }} />
-        </Form.Item>
-        <Form.Item
-          style={{ marginBottom: "10px" }}
-          // label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
-          name="website_url"
-          labelCol={{ span: 1 }}
-          wrapperCol={{ span: 6 }}
-          // rules={[{ required: true, message: "Please enter your name!" }]}
-        >
-          <Input placeholder="Website" style={{ fontWeight: "400" }} />
-        </Form.Item>
-        <Form.Item
-          style={{ marginBottom: "10px" }}
-          label={<p style={{ margin: 0, padding: 0 }}>Division : </p>}
-          name="division"
-          labelCol={{ span: 1 }}
-          wrapperCol={{ span: 6 }}
-          // rules={[{ required: true, message: "Please enter your name!" }]}
-        >
-          <Select defaultValue="">
-            <Option value="dhaka">Dhaka</Option>
-            <Option value="chattogram">Chattagram</Option>
-            <Option value="shylet">Shylet</Option>
-            <Option value="rajshahi">Rajshahi</Option>
-          </Select>
-        </Form.Item>
-        <Form.Item
-          style={{ marginBottom: "10px" }}
-          label={<p style={{ margin: 0, padding: 0 }}>District : </p>}
-          name="district"
-          labelCol={{ span: 1 }}
-          wrapperCol={{ span: 6 }}
-          // rules={[{ required: true, message: "Please enter your name!" }]}
-        >
-          <Select defaultValue="">
-            <Option value="dhaka">Dhaka</Option>
-            <Option value="chattogram">Narsingdi</Option>
-            <Option value="shylet">Narayanganj</Option>
-            <Option value="rajshahi">Gazipur</Option>
-          </Select>
-        </Form.Item>
-        <Form.Item
-          style={{ marginBottom: "10px" }}
-          label={<p style={{ margin: 0, padding: 0 }}>Upozila : </p>}
-          name="district"
-          labelCol={{ span: 1 }}
-          wrapperCol={{ span: 6 }}
-          // rules={[{ required: true, message: "Please enter your name!" }]}
-        >
-          <Select defaultValue="">
-            <Option value="dhaka">Monohardi</Option>
-            <Option value="chattogram">Kapasia</Option>
-            <Option value="shylet">Shibpur</Option>
-            <Option value="rajshahi">Polash</Option>
-          </Select>
-        </Form.Item>
-      </div>
-      <Footer click={success}/>
-    </Form>
+        </Form>
+      )}
+    </div>
   );
 };
 

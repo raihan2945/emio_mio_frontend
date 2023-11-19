@@ -15,28 +15,49 @@ const doctorApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Doctor"],
     }),
-    // userRegister: builder.mutation({
-    //   query: (data) => ({
-    //     url: '/api/v1/mio/sign-in',
-    //     method: 'POST',
-    //     body: data,
-    //   }),
-    //   async onQueryStarted(arg, { queryFulfilled, dispatch }) {
-    //     try {
-    //       const result = await queryFulfilled;
-
-    //       dispatch(
-    //         userLoggedIn({
-    //           accessToken: result.data.jwt,
-    //           user: result.data.user,
-    //         })
-    //       );
-    //     } catch (err) {
-    //       // do nothing
-    //     }
-    //   },
-    //   invalidatesTags: ['User'],
-    // }),
+    getDoctorProfile: builder.query({
+      query: (id) => ({
+        url: `/api/v1/doctors/${id}`,
+        method: "GET",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }),
+      invalidatesTags: ["Doctor"],
+    }),
+    doctorCreateOrUpdate: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/api/v1/doctors/${id}`,
+        method: "PATCH",
+        body: data,
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }),
+      invalidatesTags: ["Doctor"],
+    }),
+    doctorUpdatePut: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/api/v1/doctors/${id}`,
+        method: "PUT",
+        body: data,
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }),
+      invalidatesTags: ["Doctor"],
+    }),
+    verifyDoctor: builder.mutation({
+      query: ({data }) => ({
+        url: `/api/v1/doctors`,
+        method: "POST",
+        body: data,
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }),
+      invalidatesTags: ["Doctor"],
+    }),
     // userLogin: builder.mutation({
     //   query: (data) => ({
     //     url: '/api/v1/mio/sign-in',
@@ -63,5 +84,11 @@ const doctorApi = apiSlice.injectEndpoints({
   overrideExisting: true,
 });
 
-export const { useGetDoctorsQuery } = doctorApi;
+export const {
+  useGetDoctorsQuery,
+  useGetDoctorProfileQuery,
+  useDoctorCreateOrUpdateMutation,
+  useDoctorUpdatePutMutation,
+  useVerifyDoctorMutation
+} = doctorApi;
 export default doctorApi;

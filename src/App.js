@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { useGetUserQuery } from "./redux/features/user/userApi";
+import { ConfigProvider } from "antd";
 
 import Home from "./pages/Home";
 import Tables from "./pages/Tables";
@@ -52,7 +53,7 @@ function App() {
         />
         <Route exact path="/*" element={<PrivateOutlet />}>
           <Route path="dashboard" element={<Home />} />
-          <Route path="doctors/profile" element={<DoctorProfile />} />
+          <Route path="doctors/:id" element={<DoctorProfile />} />
           <Route path="doctors" element={<Doctors />} />
           <Route path="mio/profile" element={<MIOProfile />} />
           <Route path="mio" element={Mio} />

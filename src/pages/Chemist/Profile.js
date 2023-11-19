@@ -41,7 +41,7 @@ const Profile = () => {
   const [selectedDivision, setSelectedDivision] = useState(null);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
 
-  console.log("Selected divison is :", selectedDistrict);
+  // console.log("Selected divison is :", selectedDistrict);
 
   const { register, handleSubmit, watch, setValue } = useForm();
 
@@ -167,7 +167,8 @@ const Profile = () => {
     contact_person,
     street1,
     other_mobile,
-    upazila
+    upazila,
+    whatsapp
   }) => {
     const form = new FormData();
 
@@ -179,7 +180,8 @@ const Profile = () => {
       street1,
       contact_person,
       other_mobile,
-      upazila
+      upazila,
+      whatsapp
     };
 
     Object.keys(payload).forEach((key) => {

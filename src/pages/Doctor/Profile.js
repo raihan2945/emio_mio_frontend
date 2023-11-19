@@ -16,83 +16,63 @@ import { BsFillCheckCircleFill } from "react-icons/bs";
 import { SettingOutlined, CaretRightOutlined } from "@ant-design/icons";
 import "./profile.css";
 import BasicInfo from "../../views/DoctorProfile/BasicInfo";
-import Footer from "../../views/DoctorProfile/Footer";
 import Chambers from "../../views/DoctorProfile/Chambers";
 import ProfessionalInfo from "../../views/DoctorProfile/ProfessionalInfo";
 import Degrees from "../../views/DoctorProfile/Degrees";
 import Experiences from "../../views/DoctorProfile/Experiences";
+import { useParams } from "react-router-dom";
+import { useGetDoctorProfileQuery } from "../../redux/features/doctor/doctorApi";
 
 const { Panel } = Collapse;
 const { Option } = Select;
 const { TabPane } = Tabs;
 
 const Profile = () => {
+  const params = useParams();
+  const id = params.id;
   const [messageApi, contextHolder] = message.useMessage();
 
   const [image, setImage] = useState(null);
-  const [previewImage, setPreviewImage] = useState();
-  const fileInputRef = useRef();
 
-  const [expandIconPosition, setExpandIconPosition] = useState("start");
+  const [doctor, setDoctor] = useState(null);
 
-  const success = () => {
-    messageApi.open({
-      type: "success",
-      content: <div style={{}}> Doctor data is updated</div>,
-      className: "custom-class",
-      style: {
-        marginTop: "10vh",
-      },
-      duration: 2,
-      icon: (
-        <BsFillCheckCircleFill
-          style={{ color: "green", fontSize: "1.5rem", marginBottom: ".5rem" }}
-        />
-      ),
-    });
-  };
-
-  const handleImageSelected = (e) => {
-    const selectedFile = e.target.files[0];
-    setImage(selectedFile);
-  };
-
-  useEffect(() => {
-    if (image) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPreviewImage(reader.result);
-      };
-      reader.readAsDataURL(image);
-    }
-  }, [image]);
+  const { data: getDoctor, refetch:doctorRefetch } = useGetDoctorProfileQuery(id);
 
   const onFinish = () => {};
 
-  const genExtra = () => (
-    <SettingOutlined
-      onClick={(event) => {
-        // If you don't want click extra trigger collapse, you can prevent this:
-        event.stopPropagation();
-      }}
-    />
-  );
-
-  const onChange = (key) => {
-    console.log(key);
+  //* : MESSAGES
+  const success = (message) => {
+    messageApi.open({
+      type: "success",
+      content: message || "Success",
+    });
   };
 
-  const text = (
-    <p
-      style={{
-        paddingLeft: 24,
-      }}
-    >
-      A dog is a type of domesticated animal. Known for its loyalty and
-      faithfulness, it can be found as a welcome guest in many households across
-      the world.
-    </p>
-  );
+  const error = (message) => {
+    messageApi.open({
+      type: "error",
+      content: message || "Error",
+    });
+  };
+
+  const warning = (message) => {
+    messageApi.open({
+      type: "warning",
+      content: message || "Warning",
+    });
+  };
+
+  useEffect(() => {
+    if (getDoctor?.data) {
+      setDoctor(getDoctor?.data);
+    }
+  }, [getDoctor]);
+
+  useEffect(()=>{
+    doctorRefetch()
+  },[]);
+
+  // console.log("Doctor is ======= : ",doctor)
 
   return (
     <div style={{ position: "relative" }}>
@@ -105,7 +85,7 @@ const Profile = () => {
       >
         <Tabs defaultActiveKey="1">
           <TabPane tab="Basic Info" key="1">
-            <BasicInfo />
+            <BasicInfo id={id} doctor={doctor} doctorRefetch={doctorRefetch} success={success} error={error} warning={warning}/>
           </TabPane>
           <TabPane tab=" Professional Info" key="2">
             <ProfessionalInfo />
