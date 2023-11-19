@@ -1,6 +1,5 @@
 import { Card, Divider } from "antd";
-import React from "react";
-import { NavLink } from "react-router-dom/cjs/react-router-dom.min";
+import { NavLink } from "react-router-dom";
 
 const Campaigns = () => {
   const data = [
@@ -71,9 +70,9 @@ const Campaigns = () => {
               <p style={{margin:0, fontSize:".8rem", color:"gray"}}>User Type : {d.user_type}</p>
               <p style={{margin:0, fontSize:".8rem", color:"gray"}}>Status : {d.status}</p>
             </Card>
-            </NavLink>
-          );
-        })}
+          </NavLink>
+        );
+      })}
     </div>
   );
 };
