@@ -81,16 +81,6 @@ const BasicInfo = () => {
           wrapperCol={{ span: 6 }}
           // rules={[{ required: true, message: "Please enter your name!" }]}
         >
-          <Input placeholder="BMDC" style={{ fontWeight: "400" }} />
-        </Form.Item>
-        <Form.Item
-          style={{ marginBottom: "10px" }}
-          // label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
-          name="years_of_experience"
-          labelCol={{ span: 1 }}
-          wrapperCol={{ span: 6 }}
-          // rules={[{ required: true, message: "Please enter your name!" }]}
-        >
           <Input
             placeholder="Years Of Experience"
             style={{ fontWeight: "400" }}

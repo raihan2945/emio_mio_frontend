@@ -1,5 +1,5 @@
 import { Card, Divider } from "antd";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const Campaigns = () => {
   const data = [
@@ -56,24 +56,21 @@ const Campaigns = () => {
   ];
   return (
     <div>
-      <h5 style={{ color: "#3F51B5" }}>Chemists </h5>
-      {data?.map((d) => {
-        return (
-          <Link to="/campaigns/details">
-            <Card style={{ padding: "0", marginBottom: "5px" }}>
-              <p style={{ margin: 0, fontWeight: "600", color: "black" }}>
-                #{d.id}
-              </p>
-              <p style={{ margin: 0, fontWeight: "600", color: "#3F51B5" }}>
-                {d.campaign_name}
-              </p>
-              <Divider style={{ margin: "2px 0px" }} />
-              <p style={{ margin: 0 }}>Medium : {d.medium} </p>
-              <p style={{ margin: 0, fontSize: ".8rem", color: "gray" }}>
-                Status : {d.status}
-              </p>
+       <h5 style={{color:"#3F51B5"}}>Chemists </h5>
+         {data?.map((d) => {
+          return (
+            <NavLink to="/campaigns/details">
+
+            <Card style={{padding:"0", marginBottom:"5px"}}>
+
+              <p style={{margin:0, fontWeight:"600", color:"black"}}>#{d.id}</p>
+              <p style={{margin:0, fontWeight:"600", color:"#3F51B5"}}>{d.campaign_name}</p>
+              <Divider style={{margin:"2px 0px"}}/>
+              <p style={{margin:0}}>Medium : {d.medium} </p>
+              <p style={{margin:0, fontSize:".8rem", color:"gray"}}>User Type : {d.user_type}</p>
+              <p style={{margin:0, fontSize:".8rem", color:"gray"}}>Status : {d.status}</p>
             </Card>
-          </Link>
+          </NavLink>
         );
       })}
     </div>

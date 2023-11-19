@@ -1,21 +1,31 @@
 import React from "react";
-import { Button, Space, Table, Tag, Card, Divider } from "antd";
+import {
+  Button,
+  Space,
+  Table,
+  Tag,
+  Card,
+  Divider,
+  Skeleton,
+  Modal,
+} from "antd";
 import FilterSection from "../../views/Filter/FilterSection";
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useGetDoctorsQuery } from "../../redux/features/doctor/doctorApi";
 import { useState } from "react";
 import { useEffect } from "react";
+import CreateDoctor from "../../views/DoctorProfile/CreateDoctor";
 
 const Doctors = () => {
+  const user = useSelector((state) => state?.user?.data);
 
-  const user= useSelector(state=>state?.user?.data);
+  const [doctors, setDoctors] = useState(null);
+  const [createNew, setCreateNew] = useState(false);
 
-  const [doctors, setDoctors] = useState([])
+  const { data: getDoctors, refetch} = useGetDoctorsQuery(user?.work_area_t);
 
-  const {data:getDoctors} =useGetDoctorsQuery(user?.work_area_t);
-
-  console.log("Get doctors are : ", getDoctors)
+  console.log("Get doctors are : ", getDoctors);
 
   const columns = [
     {
@@ -93,144 +103,125 @@ const Doctors = () => {
     },
   ];
 
-  const data = [
-    {
-      id: 1,
-      territory_code: 123,
-      name: "John Doe",
-      address: "123 Main St",
-      mobile: "555-555-5555",
-      designation: "Manager",
-    },
-    {
-      id: 2,
-      territory_code: 456,
-      name: "Jane Smith",
-      address: "456 Elm St",
-      mobile: "555-555-5556",
-      designation: "Salesperson",
-    },
-    {
-      id: 3,
-      territory_code: 789,
-      name: "Robert Johnson",
-      address: "789 Oak St",
-      mobile: "555-555-5557",
-      designation: "Supervisor",
-    },
-    {
-      id: 4,
-      territory_code: 1011,
-      name: "Sarah Davis",
-      address: "101 Pine St",
-      mobile: "555-555-5558",
-      designation: "Assistant Manager",
-    },
-    {
-      id: 5,
-      territory_code: 1213,
-      name: "Michael Brown",
-      address: "222 Cedar St",
-      mobile: "555-555-5559",
-      designation: "Clerk",
-    },
-    {
-      id: 6,
-      territory_code: 1415,
-      name: "Lisa Wilson",
-      address: "333 Birch St",
-      mobile: "555-555-5560",
-      designation: "Associate",
-    },
-    {
-      id: 7,
-      territory_code: 1617,
-      name: "David Lee",
-      address: "444 Redwood St",
-      mobile: "555-555-5561",
-      designation: "Technician",
-    },
-    {
-      id: 8,
-      territory_code: 1819,
-      name: "Emily Miller",
-      address: "555 Maple St",
-      mobile: "555-555-5562",
-      designation: "Coordinator",
-    },
-    {
-      id: 9,
-      territory_code: 2021,
-      name: "William Harris",
-      address: "666 Spruce St",
-      mobile: "555-555-5563",
-      designation: "Engineer",
-    },
-    {
-      id: 10,
-      territory_code: 2223,
-      name: "Jennifer Jones",
-      address: "777 Walnut St",
-      mobile: "555-555-5564",
-      designation: "Analyst",
-    },
-  ];
+  useEffect(() => {
+    if (getDoctors?.data) {
+      setDoctors(getDoctors?.data);
+    }
+  }, [getDoctors]);
 
   useEffect(()=>{
-    if(getDoctors?.data){
-      setDoctors(getDoctors?.data)
-    }
-  },[getDoctors])
+    refetch()
+  },[])
 
   return (
-    <div>
-      {/* <FilterSection userType="doctor" /> */}
-      <h5 style={{ color: "#3F51B5" }}>Doctors </h5>
-      <div className="table-responsive">
-        {/* <Table
+    <>
+      <div>
+        {/* <FilterSection userType="doctor" /> */}
+        <div
+          style={{
+            display: "flex",
+            width: "100%",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: ".5rem 0",
+          }}
+        >
+          <h5 style={{ color: "#3F51B5" }}>Doctors </h5>
+          <Button onClick={() => setCreateNew(true)} type="primary">
+            Create New Doctor
+          </Button>
+        </div>
+        <div className="table-responsive">
+          {/* <Table
         columns={columns}
         dataSource={data}
         pagination={true}
         className="ant-border-space"
       /> */}
-        {doctors?.map((d) => {
-          return (
-            <NavLink to="/doctors/profile">
-              <Card style={{ padding: "0", marginBottom: "5px", cursor:"pointer"}}>
-                <div
-                  style={{ display: "flex", alignItems: "start", gap: "15px" }}
-                >
-                  <div>
-                    <img
-                      style={{ height: "45px", width: "45px" }}
-                      src="/icons/doctor.png"
-                    />
-                  </div>
-                  <div>
-                    <p
-                      style={{ margin: 0, fontWeight: "600", color: "#282A36" }}
+          {doctors ? (
+            doctors?.map((d) => {
+              return (
+                <NavLink to={`/doctors/${d?.dr_master_id || d?.id}`}>
+                  <Card
+                    style={{
+                      padding: "0",
+                      marginBottom: "5px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "start",
+                        gap: "15px",
+                      }}
                     >
-                     id : #{d.dr_master_id}
-                    </p>
-                    <p
-                      style={{ margin: 0, fontWeight: "600", color: "#3F51B5" }}
-                    >
-                      {d?.title}{d?.doctor_name1}
-                    </p>
-                    {/* <Divider style={{ margin: "2px 0px" }} /> */}
-                    {/* <p style={{ margin: 0 }}>Shop Owner : Mr. Owner </p> */}
-                   
-                    <p style={{ margin: 0, fontSize: ".8rem", color: "gray" }}>
-                      Chamber :{d?.ch_addr1}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            </NavLink>
-          );
-        })}
+                      <div style={{ flex: 1 }}>
+                        <img
+                          style={{ height: "45px", width: "45px" }}
+                          src="/icons/doctor.png"
+                        />
+                      </div>
+                      <div style={{ flex: 5 }}>
+                        <p
+                          style={{
+                            margin: 0,
+                            fontWeight: "500",
+                            color: "#7F7F7F",
+                          }}
+                        >
+                          id : #{d.dr_master_id || d.id}
+                        </p>
+                        <p
+                          style={{
+                            margin: 0,
+                            fontWeight: "600",
+                            color: "#3F51B5",
+                          }}
+                        >
+                          {d?.title}
+                          {" "}{d?.doctor_name1}
+                          {" "}{d?.full_name}
+                        </p>
+                        {/* <Divider style={{ margin: "2px 0px" }} /> */}
+                        {/* <p style={{ margin: 0 }}>Shop Owner : Mr. Owner </p> */}
+
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: ".8rem",
+                            color: "#383838",
+                          }}
+                        >
+                          <strong style={{fontWeight:"500"}}>Address</strong> : {" "}{d?.address}
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                </NavLink>
+              );
+            })
+          ) : (
+            <Skeleton
+              avatar
+              paragraph={{
+                rows: 4,
+              }}
+            />
+          )}
+        </div>
+      <Modal
+        title="Vertically centered modal dialog"
+        centered
+        open={createNew}
+        onOk={() => setCreateNew(false)}
+        onCancel={() => setCreateNew(false)}
+        footer={null}
+      >
+        <CreateDoctor refetch={refetch}/>
+      </Modal>
       </div>
-    </div>
+    </>
   );
 };
 
