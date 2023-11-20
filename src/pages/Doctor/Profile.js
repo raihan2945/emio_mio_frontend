@@ -107,7 +107,12 @@ const Profile = () => {
           )}
           {doctor && (
             <TabPane tab="Chambers" key="3">
-              <Chambers doctor={doctor}/>
+              <Chambers
+                doctor={doctor}
+                success={success}
+                error={error}
+                warning={warning}
+              />
             </TabPane>
           )}
           {doctor && (

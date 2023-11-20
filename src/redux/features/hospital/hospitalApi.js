@@ -3,7 +3,7 @@ import { store } from "../../store";
 
 const token = store.getState()?.auth?.accessToken;
 
-const hospitalApi = apiSlice.injectEndpoints({
+const chamberApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getChambers: builder.query({
       query: (id) => ({
@@ -57,5 +57,5 @@ export const {
   useCreateChamberMutation,
   useUpdateChamberMutation,
   useDeleteChamberMutation,
-} = hospitalApi;
-export default hospitalApi;
+} = chamberApi;
+export default chamberApi;

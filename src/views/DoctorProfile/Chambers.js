@@ -14,6 +14,7 @@ import {
   Tabs,
   Modal,
   TimePicker,
+  Popconfirm,
 } from "antd";
 import { AiOutlineCloudUpload, AiFillSave } from "react-icons/ai";
 import dayjs from "dayjs";
@@ -22,17 +23,21 @@ import moment from "moment";
 import "../../pages/Doctor/profile.css";
 import {
   useCreateChamberMutation,
+  useDeleteChamberMutation,
   useGetChambersQuery,
+  useUpdateChamberMutation,
 } from "../../redux/features/chamber/chamberApi";
+import HospitalForm from "../Hospital/HospitalForm";
 
 const { Panel } = Collapse;
 const { Option } = Select;
 const { TabPane } = Tabs;
 
-const Chambers = ({ doctor }) => {
+const Chambers = ({ doctor, success, error, warning }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const {
     register,
+    reset,
     handleSubmit,
     watch,
     getValues,
@@ -40,16 +45,29 @@ const Chambers = ({ doctor }) => {
     formState: { errors },
   } = useForm();
 
+  const formRef = useRef();
+
   const [chambers, setChambers] = useState([]);
 
   const { data: getChambers, refetch: refetchChambers } = useGetChambersQuery(
     doctor?.id
   );
-  const [createChamber, { error: createError, status: createStatus }] =
-    useCreateChamberMutation();
+  const [
+    createChamber,
+    { error: createError, status: createStatus, isSuccess: createSuccess },
+  ] = useCreateChamberMutation();
+  const [
+    updateChamber,
+    { error: updateError, status: updateStatus, isSuccess: updateSuccess },
+  ] = useUpdateChamberMutation();
+  const [
+    deleteChamber,
+    { error: deleteError, status: deleteStatus, isSuccess: deleteSucces },
+  ] = useDeleteChamberMutation();
 
   const [isAddChmaber, setAddChamber] = useState(false);
   const [editChamber, setEditChamber] = useState();
+  const [isHospital, setIsHospital] = useState(false);
 
   const options = [
     { label: "Sat", value: "Sat" },
@@ -66,6 +84,15 @@ const Chambers = ({ doctor }) => {
     console.log(`selected ${value}`);
   };
 
+  const resetAndClose = () => {
+    reset();
+    setAddChamber(false);
+    setEditChamber(false);
+    if (formRef.current) {
+      formRef.current.resetFields();
+    }
+  };
+
   useEffect(() => {
     if (getChambers) {
       setChambers(getChambers?.data);
@@ -73,6 +100,16 @@ const Chambers = ({ doctor }) => {
   }, [getChambers]);
 
   const onEdit = (chamber) => {
+    // console.log("Chamber is : ", chamber);
+    Object.keys(chamber).forEach((key) => {
+      if (key == "available_days") {
+        const days = JSON.parse(chamber[key]);
+        console.log("days is :", days);
+        setValue(key, days);
+      } else {
+        setValue(key, chamber[key]);
+      }
+    });
     setEditChamber(chamber);
   };
 
@@ -87,14 +124,76 @@ const Chambers = ({ doctor }) => {
     });
     submitData.dr_id = doctor?.id;
 
-    createChamber(submitData);
+    if (editChamber) {
+      delete submitData.updated_at;
+      delete submitData.created_at;
+      delete submitData.uuid;
+      updateChamber({ id: editChamber?.id, data: submitData });
+    } else {
+      createChamber(submitData);
+    }
   };
 
   useEffect(() => {
     refetchChambers();
   }, []);
 
-  console.log("data Error is : ", chambers);
+  useEffect(() => {
+    if (updateError) {
+      if (updateError.status == 400) {
+        updateError.data.error.map((er) => {
+          return error(er);
+        });
+      }
+      if (updateError.status == 500) {
+        error("Server Error : 500");
+      }
+    }
+    if (updateSuccess) {
+      resetAndClose();
+      refetchChambers();
+      refetchChambers();
+      success("Profile updated successfully");
+    }
+  }, [updateStatus, updateSuccess, updateError]);
+
+  useEffect(() => {
+    if (createError) {
+      if (createError.status == 400) {
+        createError.data.error.map((er) => {
+          return error(er);
+        });
+      }
+      if (createError.status == 500) {
+        error("Server Error : 500");
+      }
+    }
+    if (createSuccess) {
+      resetAndClose();
+      refetchChambers();
+      success("Profile updated successfully");
+    }
+  }, [createStatus]);
+
+  useEffect(() => {
+    if (deleteError) {
+      if (deleteError.status == 400) {
+        deleteError.data.error.map((er) => {
+          return error(er);
+        });
+      }
+      if (deleteError.status == 500) {
+        error("Server Error : 500");
+      }
+    }
+    if (deleteSucces) {
+      resetAndClose();
+      refetchChambers();
+      success("Profile updated successfully");
+    }
+  }, [deleteStatus]);
+
+  console.log("Form Value is : ", getValues());
 
   return (
     <>
@@ -125,7 +224,7 @@ const Chambers = ({ doctor }) => {
             bordered={false}
             accordion
           >
-            {chambers?.map((chamber) => {
+            {chambers?.map((chamber, index) => {
               return (
                 <Panel
                   header={
@@ -136,7 +235,7 @@ const Chambers = ({ doctor }) => {
                       <p style={{ margin: 0 }}>Narsingdi</p>
                     </div>
                   }
-                  key="1"
+                  key={index}
                 >
                   <div>
                     <div>
@@ -270,7 +369,15 @@ const Chambers = ({ doctor }) => {
                           fontWeight: 400,
                         }}
                       >
-                        Delete
+                        <Popconfirm
+                          title="Are you sure to delete this chamber?"
+                          onConfirm={() => deleteChamber(chamber?.id)}
+                          // onCancel={cancel}
+                          okText="Yes"
+                          cancelText="No"
+                        >
+                          Delete
+                        </Popconfirm>
                       </Button>
                       <Button
                         size="small"
@@ -308,18 +415,17 @@ const Chambers = ({ doctor }) => {
         open={isAddChmaber || editChamber}
         onOk={() => submit()}
         onCancel={() => {
-          setAddChamber(false)
-          setEditChamber(false)
+          resetAndClose();
         }}
         okText="Add"
       >
-        <Form layout="vertical">
-          <Form.Item label="Hospital" style={{ marginBottom: "5px" }}>
-            <input
-              {...register("hospital_id")}
-              type="number"
-              className="form-control"
-            />
+        <Form ref={formRef} layout="vertical">
+          <Form.Item style={{ marginBottom: "5px" }}>
+            <Card style={{padding:"0px"}}>
+              <p style={{ fontWeight: "500", margin: 0 }}>Hospital : </p>
+              <p style={{ fontWeight: "400", margin: 0 }}>Address : </p>
+              <Button onClick={()=>setIsHospital(true)} type="primary" style={{marginTop:"5px"}}>Add/Change</Button>
+            </Card>
           </Form.Item>
 
           <Form.Item style={{ marginBottom: "5px" }} label="Additional Address">
@@ -349,7 +455,7 @@ const Chambers = ({ doctor }) => {
                 width: "100%",
               }}
               placeholder="Availabe Days"
-              defaultValue={watch("available_days")}
+              value={watch("available_days")}
               onChange={(value) => setValue("available_days", value)}
               options={options}
             />
@@ -359,7 +465,7 @@ const Chambers = ({ doctor }) => {
               {/* <Form.Item name="start_time" style={{ marginBottom: "5px", }}> */}
               <TimePicker
                 style={{ width: "100%" }}
-                defaultValue={
+                value={
                   watch("start_time") && moment(watch("start_time"), format)
                 }
                 format={format}
@@ -371,9 +477,7 @@ const Chambers = ({ doctor }) => {
               {/* </Form.Item> */}
               {/* <Form.Item name="start_time" style={{marginBottom: "5px" }}> */}
               <TimePicker
-                defaultValue={
-                  watch("end_time") && moment(watch("end_time"), format)
-                }
+                value={watch("end_time") && moment(watch("end_time"), format)}
                 format={format}
                 placeholder="End Time"
                 style={{ width: "100%" }}
@@ -433,6 +537,20 @@ const Chambers = ({ doctor }) => {
             />
           </Form.Item>
         </Form>
+      </Modal>
+
+      <Modal
+        title="Hospital"
+        centered
+        open={isHospital}
+        // onOk={() => submit()}
+        onCancel={() => {
+          setIsHospital(false)
+        }}
+        okText="Add"
+        footer={null}
+      >
+        <HospitalForm />
       </Modal>
     </>
   );
