@@ -36,7 +36,8 @@ const Profile = () => {
 
   const [doctor, setDoctor] = useState(null);
 
-  const { data: getDoctor, refetch:doctorRefetch } = useGetDoctorProfileQuery(id);
+  const { data: getDoctor, refetch: doctorRefetch } =
+    useGetDoctorProfileQuery(id);
 
   const onFinish = () => {};
 
@@ -68,9 +69,9 @@ const Profile = () => {
     }
   }, [getDoctor]);
 
-  useEffect(()=>{
-    doctorRefetch()
-  },[]);
+  useEffect(() => {
+    doctorRefetch();
+  }, []);
 
   // console.log("Doctor is ======= : ",doctor)
 
@@ -85,20 +86,40 @@ const Profile = () => {
       >
         <Tabs defaultActiveKey="1">
           <TabPane tab="Basic Info" key="1">
-            <BasicInfo id={id} doctor={doctor} doctorRefetch={doctorRefetch} success={success} error={error} warning={warning}/>
+            <BasicInfo
+              id={id}
+              doctor={doctor}
+              doctorRefetch={doctorRefetch}
+              success={success}
+              error={error}
+              warning={warning}
+            />
           </TabPane>
-          <TabPane tab=" Professional Info" key="2">
-            <ProfessionalInfo />
-          </TabPane>
-          <TabPane tab="Chambers" key="3">
-            <Chambers />
-          </TabPane>
-          <TabPane tab="Degrees" key="4">
-            <Degrees />
-          </TabPane>
-          <TabPane tab="Experiences" key="5">
-            <Experiences />
-          </TabPane>
+          {doctor && (
+            <TabPane tab=" Professional Info" key="2">
+              <ProfessionalInfo
+                doctor={doctor}
+                success={success}
+                error={error}
+                warning={warning}
+              />
+            </TabPane>
+          )}
+          {doctor && (
+            <TabPane tab="Chambers" key="3">
+              <Chambers />
+            </TabPane>
+          )}
+          {doctor && (
+            <TabPane tab="Degrees" key="4">
+              <Degrees />
+            </TabPane>
+          )}
+          {doctor && (
+            <TabPane tab="Experiences" key="5">
+              <Experiences />
+            </TabPane>
+          )}
         </Tabs>
       </Form>
 
