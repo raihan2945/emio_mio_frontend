@@ -15,17 +15,17 @@ const ChamberForm = ({ chamber, register, watch, setValue, setIsHospital }) => {
     { label: "Fri", value: "Fri" },
   ];
 
-//   useEffect(() => {
-//     return () => {
-//         console.log("called================")
-//       if (chamber) {
-//         console.log("chamber is : ", chamber)
-//         Object.keys(chamber).forEach(key=>{
-//             setValue('key', undefined)
-//         })
-//       }
-//     };
-//   }, []);
+  //   useEffect(() => {
+  //     return () => {
+  //         console.log("called================")
+  //       if (chamber) {
+  //         console.log("chamber is : ", chamber)
+  //         Object.keys(chamber).forEach(key=>{
+  //             setValue('key', undefined)
+  //         })
+  //       }
+  //     };
+  //   }, []);
 
   return (
     <Form layout="vertical">
