@@ -28,6 +28,7 @@ import {
   useUpdateChamberMutation,
 } from "../../redux/features/chamber/chamberApi";
 import HospitalForm from "../Hospital/HospitalForm";
+import ChamberForm from "../Chamber/ChamberForm";
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -69,28 +70,21 @@ const Chambers = ({ doctor, success, error, warning }) => {
   const [editChamber, setEditChamber] = useState();
   const [isHospital, setIsHospital] = useState(false);
 
-  const options = [
-    { label: "Sat", value: "Sat" },
-    { label: "Sun", value: "Sun" },
-    { label: "Mon", value: "Mon" },
-    { label: "Tue", value: "Tue" },
-    { label: "Wed", value: "Wed" },
-    { label: "Thu", value: "Thu" },
-    { label: "Fri", value: "Fri" },
-  ];
   const format = "HH:mm";
 
   const handleChange = (value) => {
     console.log(`selected ${value}`);
   };
 
-  const resetAndClose = () => {
-    reset();
-    setAddChamber(false);
-    setEditChamber(false);
-    if (formRef.current) {
-      formRef.current.resetFields();
+  const resetAndClose = (chamber) => {
+    if (chamber) {
+      Object.keys(chamber).forEach((key) => {
+        setValue(key, undefined);
+      });
     }
+
+    setAddChamber(false);
+    setEditChamber(null);
   };
 
   useEffect(() => {
@@ -150,10 +144,10 @@ const Chambers = ({ doctor, success, error, warning }) => {
       }
     }
     if (updateSuccess) {
-      resetAndClose();
+      resetAndClose(editChamber);
       refetchChambers();
       refetchChambers();
-      success("Profile updated successfully");
+      success("Chamber updated successfully");
     }
   }, [updateStatus, updateSuccess, updateError]);
 
@@ -169,9 +163,9 @@ const Chambers = ({ doctor, success, error, warning }) => {
       }
     }
     if (createSuccess) {
-      resetAndClose();
+      resetAndClose(editChamber);
       refetchChambers();
-      success("Profile updated successfully");
+      success("Chamber updated successfully");
     }
   }, [createStatus]);
 
@@ -187,13 +181,12 @@ const Chambers = ({ doctor, success, error, warning }) => {
       }
     }
     if (deleteSucces) {
-      resetAndClose();
       refetchChambers();
-      success("Profile updated successfully");
+      success("Chamber deleted successfully");
     }
   }, [deleteStatus]);
 
-  console.log("Form Value is : ", getValues());
+  // console.log("Form Value is : ", getValues());
 
   return (
     <>
@@ -415,128 +408,17 @@ const Chambers = ({ doctor, success, error, warning }) => {
         open={isAddChmaber || editChamber}
         onOk={() => submit()}
         onCancel={() => {
-          resetAndClose();
+          resetAndClose(editChamber);
         }}
-        okText="Add"
+        okText={editChamber ? "Update" : "Add"}
       >
-        <Form ref={formRef} layout="vertical">
-          <Form.Item style={{ marginBottom: "5px" }}>
-            <Card style={{padding:"0px"}}>
-              <p style={{ fontWeight: "500", margin: 0 }}>Hospital : </p>
-              <p style={{ fontWeight: "400", margin: 0 }}>Address : </p>
-              <Button onClick={()=>setIsHospital(true)} type="primary" style={{marginTop:"5px"}}>Add/Change</Button>
-            </Card>
-          </Form.Item>
-
-          <Form.Item style={{ marginBottom: "5px" }} label="Additional Address">
-            <input
-              {...register("add_address")}
-              type="text"
-              className="form-control"
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Appointment Booking Number"
-            style={{ marginBottom: "5px" }}
-          >
-            <input
-              {...register("assistant_no")}
-              type="text"
-              className="form-control"
-            />
-          </Form.Item>
-
-          <Form.Item label="Availabe Days" style={{ marginBottom: "5px" }}>
-            <Select
-              mode="multiple"
-              allowClear
-              style={{
-                width: "100%",
-              }}
-              placeholder="Availabe Days"
-              value={watch("available_days")}
-              onChange={(value) => setValue("available_days", value)}
-              options={options}
-            />
-          </Form.Item>
-          <Form.Item style={{ marginBottom: "5px" }} label="Start & End time">
-            <div style={{ display: "flex", width: "100%", gap: "5px" }}>
-              {/* <Form.Item name="start_time" style={{ marginBottom: "5px", }}> */}
-              <TimePicker
-                style={{ width: "100%" }}
-                value={
-                  watch("start_time") && moment(watch("start_time"), format)
-                }
-                format={format}
-                onChange={(time, timeString) => {
-                  setValue("start_time", timeString);
-                }}
-                placeholder="Start Time"
-              />
-              {/* </Form.Item> */}
-              {/* <Form.Item name="start_time" style={{marginBottom: "5px" }}> */}
-              <TimePicker
-                value={watch("end_time") && moment(watch("end_time"), format)}
-                format={format}
-                placeholder="End Time"
-                style={{ width: "100%" }}
-                onChange={(time, timeString) => {
-                  setValue("end_time", timeString);
-                }}
-              />
-              {/* </Form.Item> */}
-            </div>
-          </Form.Item>
-
-          <Form.Item
-            style={{ marginBottom: "5px" }}
-            label="Consultaion duration"
-          >
-            <Select
-              //   mode="multiple"
-              allowClear
-              style={{
-                width: "100%",
-              }}
-              defaultValue={watch("consultation_duration")}
-              onChange={(value) => setValue("consultation_duration", value)}
-              options={[
-                { label: "15 mins", value: "15 mins" },
-                { label: "20 mins", value: "20 mins" },
-                { label: "30 mins", value: "30 mins" },
-              ]}
-            />
-          </Form.Item>
-          <Form.Item label="Room No." style={{ marginBottom: "5px" }}>
-            <input
-              {...register("room_no")}
-              type="number"
-              className="form-control"
-            />
-          </Form.Item>
-          <Form.Item label="Regular Fee" style={{ marginBottom: "5px" }}>
-            <input
-              {...register("fee_regular")}
-              type="number"
-              className="form-control"
-            />
-          </Form.Item>
-          <Form.Item label="Follow Up Fee" style={{ marginBottom: "5px" }}>
-            <input
-              {...register("follow_up_fee")}
-              type="number"
-              className="form-control"
-            />
-          </Form.Item>
-          <Form.Item label="Report Fee" style={{ marginBottom: "5px" }}>
-            <input
-              {...register("report_fee")}
-              type="number"
-              className="form-control"
-            />
-          </Form.Item>
-        </Form>
+        <ChamberForm
+          chamber={editChamber}
+          register={register}
+          setValue={setValue}
+          watch={watch}
+          setIsHospital={setIsHospital}
+        />
       </Modal>
 
       <Modal
@@ -545,7 +427,7 @@ const Chambers = ({ doctor, success, error, warning }) => {
         open={isHospital}
         // onOk={() => submit()}
         onCancel={() => {
-          setIsHospital(false)
+          setIsHospital(false);
         }}
         okText="Add"
         footer={null}

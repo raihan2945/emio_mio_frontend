@@ -5,57 +5,36 @@ const token = store.getState()?.auth?.accessToken;
 
 const chamberApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getChambers: builder.query({
-      query: (id) => ({
-        url: `/api/v1/chambers/doctor/${id}`,
-        method: "GET",
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }),
-      invalidatesTags: ["Chamber"],
+    getHospitals: builder.query({
+      query: (search) => {
+        const url = search
+          ? `/api/v1/hospitals?search=${search}`
+          : `/api/v1/hospitals`;
+        return search && {
+          url: url,
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        };
+      },
+      invalidatesTags: ["Hospital"],
     }),
 
-    createChamber: builder.mutation({
+    createHospital: builder.mutation({
       query: (data) => ({
-        url: `/api/v1/chambers`,
+        url: `/api/v1/hospitals`,
         method: "POST",
         body: data,
         headers: {
           authorization: `Bearer ${token}`,
         },
       }),
-      invalidatesTags: ["Chamber"],
-    }),
-    updateChamber: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `/api/v1/chambers/${id}`,
-        method: "PATCH",
-        body: data,
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }),
-      invalidatesTags: ["Chamber"],
-    }),
-    deleteChamber: builder.mutation({
-      query: (id) => ({
-        url: `/api/v1/chambers/${id}`,
-        method: "DELETE",
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }),
-      invalidatesTags: ["Chamber"],
+      invalidatesTags: ["Hospital"],
     }),
   }),
   overrideExisting: true,
 });
 
-export const {
-  useGetChambersQuery,
-  useCreateChamberMutation,
-  useUpdateChamberMutation,
-  useDeleteChamberMutation,
-} = chamberApi;
+export const { useGetHospitalsQuery, useCreateHospitalMutation } = chamberApi;
 export default chamberApi;
