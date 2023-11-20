@@ -1,38 +1,51 @@
-import React from "react";
-import { Form, Select } from "antd";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import specialityApi, {
+  useGetAllServicesQuery,
+  useGetAllSubSpecialityQuery,
+} from "../../redux/features/speciality/specialityApi";
+import debounce from "lodash/debounce";
+import { Form, Select, Spin } from "antd";
+import { useGetAllSpecialtyQuery } from "../../redux/features/speciality/specialityApi";
+import { useQuery } from "@reduxjs/toolkit/query/react";
+import DebounceSelect from "../shared/DebounceSelect";
 
-const Services = () => {
+const Services = ({ values, setValues, success, error, warning }) => {
+  const [items, setItems] = useState([]);
+  const [searchKey, setSearchKey] = useState();
+
+  const { data: getData, refetch } = useGetAllServicesQuery(searchKey);
+
+  useEffect(() => {
+    if (getData?.data) {
+      const newArray =
+        Array.isArray(getData?.data) &&
+        getData?.data?.map((d) => {
+          return {
+            label: `${d.name}`,
+            value: d.id,
+          };
+        });
+      setItems(newArray);
+    }
+  }, [getData]);
+
   return (
-    <div>
-      <Form.Item
-        style={{ marginBottom: "10px" }}
-        // label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
-        name="services"
-        labelCol={{ span: 1 }}
-        wrapperCol={{ span: 6 }}
-        // rules={[{ required: true, message: "Please enter your name!" }]}
-      >
-        <Select
-          mode="multiple"
-          allowClear
-          style={{
-            width: "100%",
-          }}
-          placeholder="Services"
-          defaultValue={"Ct Angiogram"}
-          // onChange={handleChange}
-          options={[
-            { label: "Ct Angiogram", value: "Ct Angiogram" },
-            {
-              label: "Acute Aortic Dessection",
-              value: "Acute Aortic Dessection",
-            },
-            { label: "Heart Conditions", value: "Heart Conditions" },
-          ]}
-        />
-      </Form.Item>
-    </div>
+    <Form.Item label="Services">
+      <DebounceSelect
+        mode="multiple"
+        value={values}
+        placeholder="Select users"
+        fetchOptions={items}
+        onChange={(newValue) => {
+          setValues(newValue);
+        }}
+        refetch={refetch}
+        setSearchKey={setSearchKey}
+        style={{
+          width: "100%",
+        }}
+      />
+    </Form.Item>
   );
 };
-
 export default Services;

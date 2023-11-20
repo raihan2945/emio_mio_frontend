@@ -107,7 +107,7 @@ const Profile = () => {
           )}
           {doctor && (
             <TabPane tab="Chambers" key="3">
-              <Chambers />
+              <Chambers doctor={doctor}/>
             </TabPane>
           )}
           {doctor && (

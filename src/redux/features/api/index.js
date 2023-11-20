@@ -25,7 +25,7 @@ const apiSlice = createApi({
     }
     return result;
   },
-  tagTypes: ['User','Chemist', 'Doctor', 'Location'],
+  tagTypes: ['User','Chemist', 'Doctor', 'Location', 'Chamber'],
   endpoints: (builder) => ({}),
 });
 
