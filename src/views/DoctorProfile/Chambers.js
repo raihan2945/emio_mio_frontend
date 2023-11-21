@@ -70,7 +70,7 @@ const Chambers = ({ doctor, success, error, warning }) => {
   const [editChamber, setEditChamber] = useState();
   const [isHospital, setIsHospital] = useState(false);
 
-  const [selectdHospital, setSelectedHospital] =useState(null)
+  const [selectdHospital, setSelectedHospital] = useState(null);
 
   const format = "HH:mm";
 
@@ -85,8 +85,8 @@ const Chambers = ({ doctor, success, error, warning }) => {
       });
     }
 
-    if(selectdHospital){
-      setSelectedHospital(null)
+    if (selectdHospital) {
+      setSelectedHospital(null);
     }
 
     setAddChamber(false);
@@ -95,7 +95,24 @@ const Chambers = ({ doctor, success, error, warning }) => {
 
   useEffect(() => {
     if (getChambers) {
-      setChambers(getChambers?.data);
+      // const newDatas = [...getChambers.data];
+      const newDatas = getChambers.data.map((row) => {
+        let parsedHospital;
+        try {
+          parsedHospital = JSON.parse(row.hospital);
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+          parsedHospital = null; // Handle the error, e.g., set to null or provide a default value
+        }
+
+        return {
+          ...row,
+          hospital: parsedHospital,
+        };
+      });
+
+      console.log("new datas is : ", newDatas);
+      setChambers(newDatas);
     }
   }, [getChambers]);
 
@@ -104,8 +121,12 @@ const Chambers = ({ doctor, success, error, warning }) => {
     Object.keys(chamber).forEach((key) => {
       if (key == "available_days") {
         const days = JSON.parse(chamber[key]);
-        console.log("days is :", days);
+        // console.log("days is :", days);
         setValue(key, days);
+      } else if (key == "hospital") {
+        const hos = chamber[key].hospital
+        console.log("hos is : ", hos)
+        setSelectedHospital(chamber[key].hospital);
       } else {
         setValue(key, chamber[key]);
       }
@@ -114,10 +135,9 @@ const Chambers = ({ doctor, success, error, warning }) => {
   };
 
   const submit = () => {
-
-    if(!selectdHospital){
-      error("Hospital is required")
-      return
+    if (!selectdHospital) {
+      error("Hospital is required");
+      return;
     }
 
     const formValues = getValues();
@@ -129,12 +149,13 @@ const Chambers = ({ doctor, success, error, warning }) => {
       }
     });
     submitData.dr_id = doctor?.id;
-    submitData.hospital_id = selectdHospital?.id
+    submitData.hospital_id = selectdHospital?.id;
 
     if (editChamber) {
       delete submitData.updated_at;
       delete submitData.created_at;
       delete submitData.uuid;
+      delete submitData.hosptial;
       updateChamber({ id: editChamber?.id, data: submitData });
     } else {
       createChamber(submitData);
@@ -199,7 +220,7 @@ const Chambers = ({ doctor, success, error, warning }) => {
     }
   }, [deleteStatus]);
 
-  // console.log("Form Value is : ", getValues());
+  console.log("chambers is : ", chambers);
 
   return (
     <>
@@ -236,9 +257,14 @@ const Chambers = ({ doctor, success, error, warning }) => {
                   header={
                     <div>
                       <p style={{ margin: 0, fontWeight: "500" }}>
-                        Nalabta Community clinic- Raypura
+                        {chamber?.hospital?.hospital.name}
                       </p>
-                      <p style={{ margin: 0 }}>Narsingdi</p>
+                      <p style={{ margin: 0 }}>
+                        {" "}
+                        {chamber?.hospital?.hospital?.upazila}{" "}
+                        {chamber?.hospital?.hospital?.upazila && ","}{" "}
+                        {chamber?.hospital?.hospital?.district}
+                      </p>
                     </div>
                   }
                   key={index}
@@ -254,7 +280,9 @@ const Chambers = ({ doctor, success, error, warning }) => {
                           color: "#616161",
                         }}
                       >
-                        Raypura, Narsingdi
+                        {chamber?.hospital?.hospital?.upazila}{" "}
+                        {chamber?.hospital?.hospital?.upazila && ","}{" "}
+                        {chamber?.hospital?.hospital?.full_address}
                       </p>
                       <Divider style={{ margin: "5px 0px" }} />
                     </div>
@@ -446,7 +474,10 @@ const Chambers = ({ doctor, success, error, warning }) => {
         okText="Add"
         footer={null}
       >
-        <HospitalForm setIsHospital={setIsHospital} setSelectedHospital={setSelectedHospital}/>
+        <HospitalForm
+          setIsHospital={setIsHospital}
+          setSelectedHospital={setSelectedHospital}
+        />
       </Modal>
     </>
   );
