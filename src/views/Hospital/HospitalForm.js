@@ -67,6 +67,9 @@ const HospitalForm = ({
     if (getDetailsData?.data) {
       setSelectHospital(getDetailsData?.data);
       setValue("full_address", getDetailsData?.data?.full_address);
+      setSelectedDistrict(getData?.data?.district)
+      setValue("upazila", getDetailsData?.data?.upazila);
+      setSelectedDivision(null)
     }
   }, [getDetailsData]);
 
@@ -138,7 +141,7 @@ const HospitalForm = ({
 
   // console.log("search Value is : ", searchValue);
 
-  console.log("Selected hostpial is : ", selectHospital);
+  // console.log("Selected hostpial is : ", selectHospital);
   // console.log("Hospital details is : ", selectHospital);
 
   return (
