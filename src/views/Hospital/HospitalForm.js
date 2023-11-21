@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Select, Form, Button } from "antd";
 import {
+  useCreateHospitalMutation,
   useGetHospitalDetailsQuery,
   useGetHospitalsQuery,
 } from "../../redux/features/hospital/hospitalApi";
@@ -14,11 +15,19 @@ import {
 
 const { Option } = Select;
 
-const HospitalForm = ({ setSelectedHospital, setIsHospital }) => {
+const HospitalForm = ({
+  setSelectedHospital,
+  setIsHospital,
+  success,
+  error,
+  warning,
+}) => {
   const [items, setItems] = useState([]);
   const [searchKey, setSearchKey] = useState();
 
   const { register, setValue, watch } = useForm();
+
+  const [createHospital] = useCreateHospitalMutation();
 
   const [searchValue, setSearchValue] = useState();
   const [selectHospital, setSelectHospital] = useState();
@@ -58,15 +67,11 @@ const HospitalForm = ({ setSelectedHospital, setIsHospital }) => {
     if (getDetailsData?.data) {
       setSelectHospital(getDetailsData?.data);
       setValue("full_address", getDetailsData?.data?.full_address);
+      setSelectedDistrict(getData?.data?.district)
+      setValue("upazila", getDetailsData?.data?.upazila);
+      setSelectedDivision(null)
     }
   }, [getDetailsData]);
-
-  const submitHosptial = () => {
-    if (selectHospital) {
-      setSelectedHospital(selectHospital);
-      setIsHospital(false);
-    }
-  };
 
   useEffect(() => {
     if (getData?.data) {
@@ -85,6 +90,56 @@ const HospitalForm = ({ setSelectedHospital, setIsHospital }) => {
       setItems(newArray);
     }
   }, [getData]);
+
+  useEffect(() => {
+    if (!searchValue) {
+      setSelectHospital(null);
+    }
+  }, [searchValue]);
+
+  const submitHosptial = (hospital) => {
+    if (hospital) {
+      setSelectedHospital(hospital);
+      setIsHospital(false);
+    }
+  };
+
+  const createHostpital = async () => {
+    if (!searchValue?.value) {
+      error("Hospital name is required!");
+      return;
+    }
+    if (!selectedDistrict?.value) {
+      error("District is required");
+      return;
+    }
+    if (!watch("upazila")) {
+      error("Upazila is required");
+      return;
+    }
+    if (!watch("full_address")) {
+      error("Full Address is required");
+      return;
+    }
+
+    const submitData = {
+      name: searchValue.value,
+      district: selectedDistrict.value,
+      upazila: watch("upazila"),
+      full_address: watch("full_address"),
+    };
+
+    const response = await createHospital(submitData);
+    console.log("response is : ", response);
+    if (response?.data) {
+      success("Hospital Created successfully");
+      submitHosptial(response?.data?.data)
+    } else {
+      error(JSON.stringify(response?.error));
+    }
+  };
+
+  // console.log("search Value is : ", searchValue);
 
   // console.log("Selected hostpial is : ", selectHospital);
   // console.log("Hospital details is : ", selectHospital);
@@ -213,12 +268,20 @@ const HospitalForm = ({ setSelectedHospital, setIsHospital }) => {
             className="form-control"
           />
         </Form.Item>
-        {searchValue && selectHospital && (
+        {searchValue && selectHospital ? (
           <Form.Item style={{ textAlign: "center", marginBottom: "0" }}>
-            <Button onClick={() => submitHosptial()} type="primary">
+            <Button onClick={() => submitHosptial(selectHospital)} type="primary">
               Select
             </Button>
           </Form.Item>
+        ) : searchValue ? (
+          <Form.Item style={{ textAlign: "center", marginBottom: "0" }}>
+            <Button onClick={() => createHostpital()} type="primary">
+              Create & Select
+            </Button>
+          </Form.Item>
+        ) : (
+          ""
         )}
       </Form>
     </div>

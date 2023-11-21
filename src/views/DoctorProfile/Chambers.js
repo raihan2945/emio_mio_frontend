@@ -111,7 +111,7 @@ const Chambers = ({ doctor, success, error, warning }) => {
         };
       });
 
-      console.log("new datas is : ", newDatas);
+      // console.log("new datas is : ", newDatas);
       setChambers(newDatas);
     }
   }, [getChambers]);
@@ -124,9 +124,9 @@ const Chambers = ({ doctor, success, error, warning }) => {
         // console.log("days is :", days);
         setValue(key, days);
       } else if (key == "hospital") {
-        const hos = chamber[key].hospital
-        console.log("hos is : ", hos)
-        setSelectedHospital(chamber[key].hospital);
+        const hos = chamber[key]
+        // console.log("hos is : ", hos)
+        setSelectedHospital(chamber[key]);
       } else {
         setValue(key, chamber[key]);
       }
@@ -220,7 +220,7 @@ const Chambers = ({ doctor, success, error, warning }) => {
     }
   }, [deleteStatus]);
 
-  console.log("chambers is : ", chambers);
+  // console.log("chambers is : ", chambers);
 
   return (
     <>
@@ -257,13 +257,13 @@ const Chambers = ({ doctor, success, error, warning }) => {
                   header={
                     <div>
                       <p style={{ margin: 0, fontWeight: "500" }}>
-                        {chamber?.hospital?.hospital.name}
+                        {chamber?.hospital.name}
                       </p>
                       <p style={{ margin: 0 }}>
                         {" "}
-                        {chamber?.hospital?.hospital?.upazila}{" "}
-                        {chamber?.hospital?.hospital?.upazila && ","}{" "}
-                        {chamber?.hospital?.hospital?.district}
+                        {chamber?.hospital?.upazila}{" "}
+                        {chamber?.hospital?.upazila && ","}{" "}
+                        {chamber?.hospital?.district}
                       </p>
                     </div>
                   }
@@ -280,9 +280,9 @@ const Chambers = ({ doctor, success, error, warning }) => {
                           color: "#616161",
                         }}
                       >
-                        {chamber?.hospital?.hospital?.upazila}{" "}
-                        {chamber?.hospital?.hospital?.upazila && ","}{" "}
-                        {chamber?.hospital?.hospital?.full_address}
+                        {chamber?.hospital?.upazila}{" "}
+                        {chamber?.hospital?.upazila && ","}{" "}
+                        {chamber?.hospital?.full_address}
                       </p>
                       <Divider style={{ margin: "5px 0px" }} />
                     </div>
@@ -477,7 +477,10 @@ const Chambers = ({ doctor, success, error, warning }) => {
         <HospitalForm
           setIsHospital={setIsHospital}
           setSelectedHospital={setSelectedHospital}
-        />
+          success={success}
+          warning={warning}
+          error ={error}
+       />
       </Modal>
     </>
   );
