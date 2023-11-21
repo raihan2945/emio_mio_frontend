@@ -11,11 +11,13 @@ import {
   Divider,
   Tabs,
   Modal,
+  AutoComplete,
 } from "antd";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import { BsFillCheckCircleFill } from "react-icons/bs";
 import { SettingOutlined, CaretRightOutlined } from "@ant-design/icons";
 import "../../pages/Doctor/profile.css";
+import DegreeForm from "../Degree/DegreeForm";
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -114,34 +116,7 @@ const Degrees = () => {
         onCancel={() => setAddDegree(false)}
         okText="Add"
       >
-        <Form>
-          <Form.Item style={{ marginBottom: "5px" }}>
-            <Select placeholder="Select Degree">
-              <Option value="bds">BDS</Option>
-              <Option value="bpt">BPT</Option>
-              <Option value="bhms">BHMS</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item style={{ marginBottom: "5px" }}>
-            <Select placeholder="Select institution">
-              <Option value="dmc">Dhaka Medical College, Dhaka</Option>
-              <Option value="bpt">Sir Salimullah Medical college, Dhaka</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item style={{ marginBottom: "5px" }}>
-            <Select defaultValue="bangladesh" placeholder="Select Country">
-              <Option value="bangladesh">Bangladesh</Option>
-              <Option value="usa">USA</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item style={{ marginBottom: "5px" }}>
-            <Select placeholder="Select passing year">
-              <Option value="2023">2023</Option>
-              <Option value="2022">2022</Option>
-              <Option value="2021">2021</Option>
-            </Select>
-          </Form.Item>
-        </Form>
+        <DegreeForm/>
       </Modal>
     </>
   );
