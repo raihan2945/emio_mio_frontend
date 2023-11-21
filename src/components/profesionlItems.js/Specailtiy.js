@@ -1,81 +1,48 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import specialityApi from "../../redux/features/speciality/specialityApi";
 import debounce from "lodash/debounce";
-import { Select, Spin } from "antd";
-import { useGetAllSpecialtyQuery } from "../../redux/features/speciality/speciality";
+import { Form, Select, Spin } from "antd";
+import { useGetAllSpecialtyQuery } from "../../redux/features/speciality/specialityApi";
+import { useQuery } from "@reduxjs/toolkit/query/react";
+import DebounceSelect from "../shared/DebounceSelect";
 
-function DebounceSelect({ fetchOptions, debounceTimeout = 800, ...props }) {
-  const [fetching, setFetching] = useState(false);
-  const [options, setOptions] = useState([]);
-  const fetchRef = useRef(0);
-  const debounceFetcher = useMemo(() => {
-    const loadOptions = (value) => {
-      fetchRef.current += 1;
-      const fetchId = fetchRef.current;
-      setOptions([]);
-      setFetching(true);
-      fetchOptions(value).then((newOptions) => {
-        if (fetchId !== fetchRef.current) {
-          // for fetch callback order
-          return;
-        }
-        setOptions(newOptions);
-        setFetching(false);
-      });
-    };
-    return debounce(loadOptions, debounceTimeout);
-  }, [fetchOptions, debounceTimeout]);
-  return (
-    <Select
-      labelInValue
-      filterOption={false}
-      onSearch={debounceFetcher}
-      notFoundContent={fetching ? <Spin size="small" /> : null}
-      {...props}
-      options={options}
-    />
-  );
-}
+const Speciality = ({ values, setValues, success, error, warning }) => {
+  const [items, setItems] = useState([]);
+  const [searchKey, setSearchKey] = useState();
 
-// Usage of DebounceSelect
+  const { data: getData, refetch } = useGetAllSpecialtyQuery(searchKey);
 
-async function fetchUserList(username) {
-  console.log("fetching user", username);
-  return fetch("https://randomuser.me/api/?results=5")
-    .then((response) => response.json())
-    .then((body) =>
-      body.results.map((user) => ({
-        label: `${user.name.first} ${user.name.last}`,
-        value: user.login.username,
-      }))
-    );
-}
-
-const Speciality = ({ doctor, success, error, warning }) => {
-  const [value, setValue] = useState([]);
-
-  const [specialities, setSpecialities] = useState([]);
-
-  const { data: getSpeciality } = useGetAllSpecialtyQuery();
-
-  useEffect(()=>{
-    if(getSpeciality?.data){
-        setSpecialities(getSpeciality?.data)
+  useEffect(() => {
+    if (getData?.data) {
+      const newArray =
+        Array.isArray(getData?.data) &&
+        getData?.data?.map((d) => {
+          return {
+            label: `${d.name}`,
+            value: d.id,
+          };
+        });
+      setItems(newArray);
     }
-  },[getSpeciality])
+  }, [getData]);
 
   return (
-    <DebounceSelect
-      mode="multiple"
-      value={value}
-      placeholder="Select users"
-      fetchOptions={specialities}
-      onChange={(newValue) => {
-        setValue(newValue);
-      }}
-      style={{
-        width: "100%",
-      }}
-    />
+    <Form.Item label="Speciality">
+      <DebounceSelect
+        mode="multiple"
+        value={values}
+        placeholder="Select users"
+        fetchOptions={items}
+        onChange={(newValue) => {
+          setValues(newValue);
+        }}
+        refetch={refetch}
+        setSearchKey={setSearchKey}
+        style={{
+          width: "100%",
+        }}
+      />
+    </Form.Item>
   );
 };
 export default Speciality;

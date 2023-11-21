@@ -8,12 +8,13 @@ import { Form, Select, Spin } from "antd";
 import { useGetAllSpecialtyQuery } from "../../redux/features/speciality/specialityApi";
 import { useQuery } from "@reduxjs/toolkit/query/react";
 import DebounceSelect from "../shared/DebounceSelect";
+import { useGetAllBrandsQuery } from "../../redux/features/products/productsApi";
 
-const Services = ({ values, setValues, success, error, warning }) => {
+const Prospect = ({ values, setValues, success, error, warning }) => {
   const [items, setItems] = useState([]);
   const [searchKey, setSearchKey] = useState();
 
-  const { data: getData, refetch } = useGetAllServicesQuery(searchKey);
+  const { data: getData, refetch } = useGetAllBrandsQuery(searchKey);
 
   useEffect(() => {
     if (getData?.data) {
@@ -21,8 +22,8 @@ const Services = ({ values, setValues, success, error, warning }) => {
         Array.isArray(getData?.data) &&
         getData?.data?.map((d) => {
           return {
-            label: `${d.name}`,
-            value: d.id,
+            label: `${d.brand_code_text}`,
+            value: d.brand_code_text,
           };
         });
       setItems(newArray);
@@ -30,11 +31,11 @@ const Services = ({ values, setValues, success, error, warning }) => {
   }, [getData]);
 
   return (
-    <Form.Item label="Services">
+    <Form.Item label="Prospect">
       <DebounceSelect
         mode="multiple"
         value={values}
-        placeholder="Select users"
+        placeholder="Select brand"
         fetchOptions={items}
         onChange={(newValue) => {
           setValues(newValue);
@@ -48,4 +49,4 @@ const Services = ({ values, setValues, success, error, warning }) => {
     </Form.Item>
   );
 };
-export default Services;
+export default Prospect;

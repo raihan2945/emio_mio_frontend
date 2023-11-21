@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useForm } from "react-hook-form";
+
 import {
   Button,
   Card,
@@ -12,70 +14,193 @@ import {
   Tabs,
   Modal,
   TimePicker,
+  Popconfirm,
 } from "antd";
 import { AiOutlineCloudUpload, AiFillSave } from "react-icons/ai";
-import { BsFillCheckCircleFill } from "react-icons/bs";
-import { SettingOutlined, CaretRightOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
+import moment from "moment";
+
 import "../../pages/Doctor/profile.css";
+import {
+  useCreateChamberMutation,
+  useDeleteChamberMutation,
+  useGetChambersQuery,
+  useUpdateChamberMutation,
+} from "../../redux/features/chamber/chamberApi";
+import HospitalForm from "../Hospital/HospitalForm";
+import ChamberForm from "../Chamber/ChamberForm";
 
 const { Panel } = Collapse;
 const { Option } = Select;
 const { TabPane } = Tabs;
 
-const Chambers = () => {
+const Chambers = ({ doctor, success, error, warning }) => {
   const [messageApi, contextHolder] = message.useMessage();
+  const {
+    register,
+    reset,
+    handleSubmit,
+    watch,
+    getValues,
+    setValue,
+    formState: { errors },
+  } = useForm();
 
-  const [image, setImage] = useState(null);
-  const [previewImage, setPreviewImage] = useState();
-  const fileInputRef = useRef();
+  const formRef = useRef();
+
+  const [chambers, setChambers] = useState([]);
+
+  const { data: getChambers, refetch: refetchChambers } = useGetChambersQuery(
+    doctor?.id
+  );
+  const [
+    createChamber,
+    { error: createError, status: createStatus, isSuccess: createSuccess },
+  ] = useCreateChamberMutation();
+  const [
+    updateChamber,
+    { error: updateError, status: updateStatus, isSuccess: updateSuccess },
+  ] = useUpdateChamberMutation();
+  const [
+    deleteChamber,
+    { error: deleteError, status: deleteStatus, isSuccess: deleteSucces },
+  ] = useDeleteChamberMutation();
 
   const [isAddChmaber, setAddChamber] = useState(false);
+  const [editChamber, setEditChamber] = useState();
+  const [isHospital, setIsHospital] = useState(false);
 
-  const success = () => {
-    messageApi.open({
-      type: "success",
-      content: <div style={{}}> Doctor data is updated</div>,
-      className: "custom-class",
-      style: {
-        marginTop: "10vh",
-      },
-      duration: 2,
-      icon: (
-        <BsFillCheckCircleFill
-          style={{ color: "green", fontSize: "1.5rem", marginBottom: ".5rem" }}
-        />
-      ),
-    });
-  };
+  const [selectdHospital, setSelectedHospital] =useState(null)
 
-  const handleImageSelected = (e) => {
-    const selectedFile = e.target.files[0];
-    setImage(selectedFile);
-  };
-
-  useEffect(() => {
-    if (image) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPreviewImage(reader.result);
-      };
-      reader.readAsDataURL(image);
-    }
-  }, [image]);
-
-  const options = [
-    { label: "Sat", value: "Sat" },
-    { label: "Sun", value: "Sun" },
-    { label: "Mon", value: "Mon" },
-    { label: "Tue", value: "Tue" },
-    { label: "Wed", value: "Wed" },
-    { label: "Thu", value: "Thu" },
-    { label: "Fri", value: "Fri" },
-  ];
+  const format = "HH:mm";
 
   const handleChange = (value) => {
     console.log(`selected ${value}`);
   };
+
+  const resetAndClose = (chamber) => {
+    if (chamber) {
+      Object.keys(chamber).forEach((key) => {
+        setValue(key, undefined);
+      });
+    }
+
+    if(selectdHospital){
+      setSelectedHospital(null)
+    }
+
+    setAddChamber(false);
+    setEditChamber(null);
+  };
+
+  useEffect(() => {
+    if (getChambers) {
+      setChambers(getChambers?.data);
+    }
+  }, [getChambers]);
+
+  const onEdit = (chamber) => {
+    // console.log("Chamber is : ", chamber);
+    Object.keys(chamber).forEach((key) => {
+      if (key == "available_days") {
+        const days = JSON.parse(chamber[key]);
+        console.log("days is :", days);
+        setValue(key, days);
+      } else {
+        setValue(key, chamber[key]);
+      }
+    });
+    setEditChamber(chamber);
+  };
+
+  const submit = () => {
+
+    if(!selectdHospital){
+      error("Hospital is required")
+      return
+    }
+
+    const formValues = getValues();
+
+    const submitData = {};
+    Object.keys(formValues).forEach((key) => {
+      if (formValues[key]) {
+        submitData[key] = formValues[key];
+      }
+    });
+    submitData.dr_id = doctor?.id;
+    submitData.hospital_id = selectdHospital?.id
+
+    if (editChamber) {
+      delete submitData.updated_at;
+      delete submitData.created_at;
+      delete submitData.uuid;
+      updateChamber({ id: editChamber?.id, data: submitData });
+    } else {
+      createChamber(submitData);
+    }
+  };
+
+  useEffect(() => {
+    refetchChambers();
+  }, []);
+
+  useEffect(() => {
+    if (updateError) {
+      if (updateError.status == 400) {
+        updateError.data.error.map((er) => {
+          return error(er);
+        });
+      }
+      if (updateError.status == 500) {
+        error("Server Error : 500");
+      }
+    }
+    if (updateSuccess) {
+      resetAndClose(editChamber);
+      refetchChambers();
+      refetchChambers();
+      success("Chamber updated successfully");
+    }
+  }, [updateStatus, updateSuccess, updateError]);
+
+  useEffect(() => {
+    if (createError) {
+      if (createError.status == 400) {
+        createError.data.error.map((er) => {
+          return error(er);
+        });
+      }
+      if (createError.status == 500) {
+        error("Server Error : 500");
+      }
+    }
+    if (createSuccess) {
+      resetAndClose(editChamber);
+      refetchChambers();
+      success("Chamber updated successfully");
+    }
+  }, [createStatus]);
+
+  useEffect(() => {
+    if (deleteError) {
+      if (deleteError.status == 400) {
+        deleteError.data.error.map((er) => {
+          return error(er);
+        });
+      }
+      if (deleteError.status == 500) {
+        error("Server Error : 500");
+      }
+    }
+    if (deleteSucces) {
+      refetchChambers();
+      success("Chamber deleted successfully");
+    }
+  }, [deleteStatus]);
+
+  // console.log("Form Value is : ", getValues());
+
   return (
     <>
       <div style={{ marginTop: "5px" }}>
@@ -105,162 +230,178 @@ const Chambers = () => {
             bordered={false}
             accordion
           >
-            <Panel
-              header={
-                <div>
-                  <p style={{ margin: 0, fontWeight: "500" }}>
-                    Nalabta Community clinic- Raypura
-                  </p>
-                  <p style={{ margin: 0 }}>Narsingdi</p>
-                </div>
-              }
-              key="1"
-            >
-              <div>
-                <div>
-                  <p style={{ margin: 0, fontSize: ".7rem" }}>Address</p>
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: ".8rem",
-                      fontWeight: "500",
-                      color: "#616161",
-                    }}
-                  >
-                    Raypura, Narsingdi
-                  </p>
-                  <Divider style={{ margin: "5px 0px" }} />
-                </div>
-                <div>
-                  <p style={{ margin: 0, fontSize: ".7rem" }}>
-                    Appointment Booking Number
-                  </p>
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: ".8rem",
-                      fontWeight: "500",
-                      color: "#616161",
-                    }}
-                  >
-                    01630542945
-                  </p>
-                  <Divider style={{ margin: "5px 0px" }} />
-                </div>
-                <div>
-                  <p style={{ margin: 0, fontSize: ".7rem" }}>Available Days</p>
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: ".8rem",
-                      fontWeight: "500",
-                      color: "#616161",
-                    }}
-                  >
-                    Mon, Tue, Fri, Sun
-                  </p>
-                  <Divider style={{ margin: "5px 0px" }} />
-                </div>
-                <div>
-                  <p style={{ margin: 0, fontSize: ".7rem" }}>Available Time</p>
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: ".8rem",
-                      fontWeight: "500",
-                      color: "#616161",
-                    }}
-                  >
-                    03:30 AM - 03:30PM
-                  </p>
-                  <Divider style={{ margin: "5px 0px" }} />
-                </div>
-                <div>
-                  <p style={{ margin: 0, fontSize: ".7rem" }}>
-                    Consultaion Duration
-                  </p>
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: ".8rem",
-                      fontWeight: "500",
-                      color: "#616161",
-                    }}
-                  >
-                    30Mins
-                  </p>
-                  <Divider style={{ margin: "5px 0px" }} />
-                </div>
-                <div style={{ display: "flex", gap: "15px" }}>
-                  <div style={{ flex: 1 }}>
-                    <p style={{ margin: 0, fontSize: ".7rem" }}>
-                      In-clinic consultation fee
-                    </p>
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: "1.2rem",
-                        fontWeight: "500",
-                        color: "#2ECD71",
-                      }}
-                    >
-                      ৳ 500
-                    </p>
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <p style={{ margin: 0, fontSize: ".7rem" }}>
-                      Follow-up fee
-                    </p>
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: "1.2rem",
-                        fontWeight: "500",
-                        color: "#2ECD71",
-                      }}
-                    >
-                      ৳ 400
-                    </p>
-                  </div>
-                </div>
-                {/* <Divider style={{ margin: "5px 0px" }} /> */}
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "5px",
-                    justifyContent: "center",
-                    marginTop: "5px",
-                  }}
+            {chambers?.map((chamber, index) => {
+              return (
+                <Panel
+                  header={
+                    <div>
+                      <p style={{ margin: 0, fontWeight: "500" }}>
+                        Nalabta Community clinic- Raypura
+                      </p>
+                      <p style={{ margin: 0 }}>Narsingdi</p>
+                    </div>
+                  }
+                  key={index}
                 >
-                  <Button
-                    size="small"
-                    style={{
-                      fontSize: ".6rem",
-                      color: "red",
-                      borderColor: "red",
-                      fontWeight: 400,
-                    }}
-                  >
-                    Delete
-                  </Button>
-                  <Button
-                    size="small"
-                    style={{
-                      fontSize: ".6rem",
-                      color: "#006BB1",
-                      borderColor: "#006BB1",
-                      fontWeight: 400,
-                    }}
-                    onClick={() => setAddChamber(true)}
-                  >
-                    Edit
-                  </Button>
-                </div>
-              </div>
-            </Panel>
-            {/* <Panel header="Panel 2" key="2">
-              <p>Content of Panel 2</p>
-            </Panel> */}
+                  <div>
+                    <div>
+                      <p style={{ margin: 0, fontSize: ".7rem" }}>Address</p>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: ".8rem",
+                          fontWeight: "500",
+                          color: "#616161",
+                        }}
+                      >
+                        Raypura, Narsingdi
+                      </p>
+                      <Divider style={{ margin: "5px 0px" }} />
+                    </div>
+                    <div>
+                      <p style={{ margin: 0, fontSize: ".7rem" }}>
+                        Appointment Booking Number
+                      </p>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: ".8rem",
+                          fontWeight: "500",
+                          color: "#616161",
+                        }}
+                      >
+                        0{chamber?.assistant_no}
+                      </p>
+                      <Divider style={{ margin: "5px 0px" }} />
+                    </div>
+                    <div>
+                      <p style={{ margin: 0, fontSize: ".7rem" }}>
+                        Available Days
+                      </p>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: ".8rem",
+                          fontWeight: "500",
+                          color: "#616161",
+                        }}
+                      >
+                        {chamber?.available_days &&
+                          JSON.parse(chamber?.available_days).map(
+                            (c, index) => `${index == 0 ? "" : ","} ${c}`
+                          )}
+                      </p>
+                      <Divider style={{ margin: "5px 0px" }} />
+                    </div>
+                    <div>
+                      <p style={{ margin: 0, fontSize: ".7rem" }}>
+                        Available Time
+                      </p>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: ".8rem",
+                          fontWeight: "500",
+                          color: "#616161",
+                        }}
+                      >
+                        {chamber?.start_time} - {chamber?.end_time}
+                      </p>
+                      <Divider style={{ margin: "5px 0px" }} />
+                    </div>
+                    <div>
+                      <p style={{ margin: 0, fontSize: ".7rem" }}>
+                        Consultaion Duration
+                      </p>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: ".8rem",
+                          fontWeight: "500",
+                          color: "#616161",
+                        }}
+                      >
+                        {chamber?.consultation_duration}
+                      </p>
+                      <Divider style={{ margin: "5px 0px" }} />
+                    </div>
+                    <div style={{ display: "flex", gap: "15px" }}>
+                      <div style={{ flex: 1 }}>
+                        <p style={{ margin: 0, fontSize: ".7rem" }}>
+                          In-clinic consultation fee
+                        </p>
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: "1.2rem",
+                            fontWeight: "500",
+                            color: "#2ECD71",
+                          }}
+                        >
+                          ৳ {chamber?.fee_regular}
+                        </p>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <p style={{ margin: 0, fontSize: ".7rem" }}>
+                          Follow-up fee
+                        </p>
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: "1.2rem",
+                            fontWeight: "500",
+                            color: "#2ECD71",
+                          }}
+                        >
+                          ৳ {chamber?.follow_up_fee}
+                        </p>
+                      </div>
+                    </div>
+                    {/* <Divider style={{ margin: "5px 0px" }} /> */}
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "5px",
+                        justifyContent: "center",
+                        marginTop: "5px",
+                      }}
+                    >
+                      <Button
+                        size="small"
+                        style={{
+                          fontSize: ".6rem",
+                          color: "red",
+                          borderColor: "red",
+                          fontWeight: 400,
+                        }}
+                      >
+                        <Popconfirm
+                          title="Are you sure to delete this chamber?"
+                          onConfirm={() => deleteChamber(chamber?.id)}
+                          // onCancel={cancel}
+                          okText="Yes"
+                          cancelText="No"
+                        >
+                          Delete
+                        </Popconfirm>
+                      </Button>
+                      <Button
+                        size="small"
+                        style={{
+                          fontSize: ".6rem",
+                          color: "#006BB1",
+                          borderColor: "#006BB1",
+                          fontWeight: 400,
+                        }}
+                        onClick={() => onEdit(chamber)}
+                      >
+                        Edit
+                      </Button>
+                    </div>
+                  </div>
+                </Panel>
+              );
+            })}
           </Collapse>
         </div>
         <div style={{ width: "100%", textAlign: "center" }}>
@@ -277,81 +418,35 @@ const Chambers = () => {
       <Modal
         title="Add New Chamber"
         centered
-        open={isAddChmaber}
-        onOk={() => setAddChamber(false)}
-        onCancel={() => setAddChamber(false)}
-        okText="Add"
+        open={isAddChmaber || editChamber}
+        onOk={() => submit()}
+        onCancel={() => {
+          resetAndClose(editChamber);
+        }}
+        okText={editChamber ? "Update" : "Add"}
       >
-        <Form>
-          <Form.Item style={{ marginBottom: "5px" }}>
-            <Input placeholder="Hospital" style={{ fontWeight: "400" }} />
-          </Form.Item>
-          <Form.Item style={{ marginBottom: "5px" }}>
-            <Input placeholder="Add. Address" style={{ fontWeight: "400" }} />
-          </Form.Item>
-          <Form.Item style={{ marginBottom: "5px" }}>
-            <Input
-              placeholder="Appointment Booking Number"
-              style={{ fontWeight: "400" }}
-            />
-          </Form.Item>
-          <Form.Item style={{ marginBottom: "5px" }}>
-            <Input
-              placeholder="Contact Person/Assistant Name"
-              style={{ fontWeight: "400" }}
-            />
-          </Form.Item>
-          <Form.Item style={{ marginBottom: "5px" }}>
-            <Input
-              placeholder="Assistant Phone Number"
-              style={{ fontWeight: "400" }}
-            />
-          </Form.Item>
-          <Form.Item style={{ marginBottom: "5px" }}>
-            <Select
-              mode="multiple"
-              allowClear
-              style={{
-                width: "100%",
-              }}
-              placeholder="Availabe Days"
-              defaultValue={["Sun"]}
-              onChange={handleChange}
-              options={options}
-            />
-          </Form.Item>
-          <Form.Item style={{ marginBottom: "5px" }}>
-          <div style={{ display: "flex",width:"100%", gap:"5px" }}>
-            {/* <Form.Item name="start_time" style={{ marginBottom: "5px", }}> */}
-            <TimePicker style={{  width: "100%" }} />
-            {/* </Form.Item> */}
-            {/* <Form.Item name="start_time" style={{marginBottom: "5px" }}> */}
-            <TimePicker
-              placeholder="End Time"
-              style={{width: "100%" }}
-            />
-            {/* </Form.Item> */}
-          </div>
-          </Form.Item>
+        <ChamberForm
+          chamber={editChamber}
+          register={register}
+          setValue={setValue}
+          watch={watch}
+          setIsHospital={setIsHospital}
+          selectdHospital={selectdHospital}
+        />
+      </Modal>
 
-          <Form.Item style={{ marginBottom: "5px" }}>
-            <Select
-              //   mode="multiple"
-              allowClear
-              style={{
-                width: "100%",
-              }}
-              placeholder="Availabe Days"
-              defaultValue={"15 mins"}
-              onChange={handleChange}
-              options={[
-                { label: "15 mins", value: "15 mins" },
-                { label: "20 mins", value: "20 mins" },
-                { label: "30 mins", value: "30 mins" },
-              ]}
-            />
-          </Form.Item>
-        </Form>
+      <Modal
+        title="Hospital"
+        centered
+        open={isHospital}
+        // onOk={() => submit()}
+        onCancel={() => {
+          setIsHospital(false);
+        }}
+        okText="Add"
+        footer={null}
+      >
+        <HospitalForm setIsHospital={setIsHospital} setSelectedHospital={setSelectedHospital}/>
       </Modal>
     </>
   );

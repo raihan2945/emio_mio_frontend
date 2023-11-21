@@ -22,6 +22,7 @@ import Degrees from "../../views/DoctorProfile/Degrees";
 import Experiences from "../../views/DoctorProfile/Experiences";
 import { useParams } from "react-router-dom";
 import { useGetDoctorProfileQuery } from "../../redux/features/doctor/doctorApi";
+import Brand from "../../views/DoctorProfile/Brand";
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -107,16 +108,31 @@ const Profile = () => {
           )}
           {doctor && (
             <TabPane tab="Chambers" key="3">
-              <Chambers />
+              <Chambers
+                doctor={doctor}
+                success={success}
+                error={error}
+                warning={warning}
+              />
             </TabPane>
           )}
           {doctor && (
-            <TabPane tab="Degrees" key="4">
+            <TabPane tab="Brand" key="4">
+              <Brand
+                doctor={doctor}
+                success={success}
+                error={error}
+                warning={warning}
+              />
+            </TabPane>
+          )}
+          {doctor && (
+            <TabPane tab="Degrees" key="5">
               <Degrees />
             </TabPane>
           )}
           {doctor && (
-            <TabPane tab="Experiences" key="5">
+            <TabPane tab="Experiences" key="6">
               <Experiences />
             </TabPane>
           )}
