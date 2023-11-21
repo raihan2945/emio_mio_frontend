@@ -2,7 +2,14 @@ import React, { useEffect } from "react";
 import { Button, Card, Form, Select, TimePicker } from "antd";
 import moment from "moment";
 
-const ChamberForm = ({ chamber, register, watch, setValue, setIsHospital }) => {
+const ChamberForm = ({
+  selectdHospital,
+  chamber,
+  register,
+  watch,
+  setValue,
+  setIsHospital,
+}) => {
   const format = "HH:mm";
 
   const options = [
@@ -31,8 +38,12 @@ const ChamberForm = ({ chamber, register, watch, setValue, setIsHospital }) => {
     <Form layout="vertical">
       <Form.Item style={{ marginBottom: "5px" }}>
         <Card style={{ padding: "0px" }}>
-          <p style={{ fontWeight: "500", margin: 0 }}>Hospital : </p>
-          <p style={{ fontWeight: "400", margin: 0 }}>Address : </p>
+          <p style={{ fontWeight: "500", margin: 0 }}>
+            Hospital : {selectdHospital?.name}{" "}
+          </p>
+          <p style={{ fontWeight: "400", margin: 0 }}>
+            Address :{selectdHospital?.upazila}-{selectdHospital?.full_address}
+          </p>
           <Button
             onClick={() => setIsHospital(true)}
             type="primary"

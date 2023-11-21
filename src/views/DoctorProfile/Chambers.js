@@ -70,6 +70,8 @@ const Chambers = ({ doctor, success, error, warning }) => {
   const [editChamber, setEditChamber] = useState();
   const [isHospital, setIsHospital] = useState(false);
 
+  const [selectdHospital, setSelectedHospital] =useState(null)
+
   const format = "HH:mm";
 
   const handleChange = (value) => {
@@ -81,6 +83,10 @@ const Chambers = ({ doctor, success, error, warning }) => {
       Object.keys(chamber).forEach((key) => {
         setValue(key, undefined);
       });
+    }
+
+    if(selectdHospital){
+      setSelectedHospital(null)
     }
 
     setAddChamber(false);
@@ -108,6 +114,12 @@ const Chambers = ({ doctor, success, error, warning }) => {
   };
 
   const submit = () => {
+
+    if(!selectdHospital){
+      error("Hospital is required")
+      return
+    }
+
     const formValues = getValues();
 
     const submitData = {};
@@ -117,6 +129,7 @@ const Chambers = ({ doctor, success, error, warning }) => {
       }
     });
     submitData.dr_id = doctor?.id;
+    submitData.hospital_id = selectdHospital?.id
 
     if (editChamber) {
       delete submitData.updated_at;
@@ -418,6 +431,7 @@ const Chambers = ({ doctor, success, error, warning }) => {
           setValue={setValue}
           watch={watch}
           setIsHospital={setIsHospital}
+          selectdHospital={selectdHospital}
         />
       </Modal>
 
@@ -432,7 +446,7 @@ const Chambers = ({ doctor, success, error, warning }) => {
         okText="Add"
         footer={null}
       >
-        <HospitalForm />
+        <HospitalForm setIsHospital={setIsHospital} setSelectedHospital={setSelectedHospital}/>
       </Modal>
     </>
   );
