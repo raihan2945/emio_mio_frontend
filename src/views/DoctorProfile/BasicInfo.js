@@ -37,7 +37,7 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
   const [previewImage, setPreviewImage] = useState();
   const fileInputRef = useRef();
 
-  const dateFormat = "YYYY-MM-DD";
+  const dateFormat = 'YYYY-MM-DD';
 
   const {
     register,
@@ -171,7 +171,7 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
     updateDoctor({ id: doctor?.id, data: form });
   };
 
-  console.log("update error is ; ", updateError)
+  console.log("doctor is ; ", doctor);
 
   return (
     <div>
@@ -206,7 +206,13 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
                   }}
                 >
                   <img
-                    src={previewImage ? previewImage : doctor?.profile_photo ? `${baseUrl}/uploads/${doctor?.profile_photo}` :  "/icons/profile.png"}
+                    src={
+                      previewImage
+                        ? previewImage
+                        : doctor?.profile_photo
+                        ? `${baseUrl}/uploads/${doctor?.profile_photo}`
+                        : "/icons/profile.png"
+                    }
                     style={{
                       width: "100%",
                       height: "6rem",
@@ -299,13 +305,15 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
               // rules={[{ required: true, message: "Please enter your name!" }]}
             >
               <DatePicker
-                // defaultValue={dayjs(moment(watch('dob')).format("YYYY-MM-DD"))}
+                value={watch("dob") && moment(watch("dob"), dateFormat)}
+                format={dateFormat}
                 placeholder="Date of birth"
                 style={{ width: "100%" }}
                 allowClear={false}
                 onChange={(date, dateString) => {
-                  console.log('date is : ', date)
-                  setValue("dob", date)}}
+                  // console.log("date is : ", date);
+                  setValue("dob", dateString);
+                }}
               />
             </Form.Item>
 

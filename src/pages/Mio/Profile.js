@@ -7,7 +7,7 @@ import {
   useGetProfileQuery,
   useUpdateUserMutation,
 } from "../../redux/features/user/userApi";
-import dayjs from "dayjs";
+// import dayjs from "dayjs";
 
 import "../Doctor/profile.css";
 import baseUrl from "../../utils/baseUrl";
@@ -27,7 +27,7 @@ const Profile = () => {
   const [previewVisible, setPreviewVisible] = useState(false);
   const fileInputRef = useRef();
 
-  const dateFormat = "YYYY-MM-DD";
+  const dateFormat = 'YYYY/MM/DD';
 
   //* : MESSAGES
   const success = (message) => {
@@ -122,7 +122,7 @@ const Profile = () => {
           // form={form}
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 12 }}
-          initialValues={{birthday:dayjs(profile?.dob),...profile}}
+          initialValues={{birthday:moment(profile?.dob, dateFormat),...profile}}
           onFinish={onFinish}
           layout="vertical"
         >
@@ -230,7 +230,8 @@ const Profile = () => {
                 pr.dob = dateString;
                 setProfile(pr);
               }}
-              // defaultValue={dayjs(profile.dob)}
+              // value={moment('2015/01/01', dateFormat)}
+              format={dateFormat}
               style={{ width: "100%" }}
               allowClear={false}
             />
