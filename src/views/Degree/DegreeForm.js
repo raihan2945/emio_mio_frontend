@@ -2,61 +2,94 @@ import React, { useEffect, useState } from "react";
 import { Form, AutoComplete, Select } from "antd";
 import {} from "react-hook-form";
 import { useGetDegreesQuery } from "../../redux/features/degree/degreeApi";
+import { useGetInstitutesQuery } from "../../redux/features/institue/instituteApi";
+import { useGetCountriesQuery } from "../../redux/features/locations/locationApi";
 
 const { Option } = Select;
 
 const DegreeForm = () => {
-  const [degrees, setDegrees] = useState([]);
-  const [degreeKey, setDegreeKey] = useState();
+  const [degree, setDegree] = useState();
 
-  const { data: getDegrees, refetch: refetchDegrees } =
-    useGetDegreesQuery(degreeKey);
+  const [institute, setInstitute] = useState();
 
-  useEffect(() => {
-    if (degreeKey) {
-      refetchDegrees();
-    }
-  }, [degreeKey]);
+  const [country, setCountry] = useState();
 
-  useEffect(() => {
-    if (getDegrees?.data) {
-      setDegrees(
-        getDegrees?.data?.map((d) => {
-          return {
-            label: d.name,
-            value: d.id,
-          };
-        })
-      );
-    }
-  }, [getDegrees]);
+  const { data: getDegrees, refetch: refetchDegrees } = useGetDegreesQuery(
+    degree?.label
+  );
+
+  const { data: getInstitutes, refetch: refetchIns } = useGetInstitutesQuery(
+    institute?.label
+  );
+
+  const { data: getCountries, refetch: refetchCountry } = useGetCountriesQuery(
+    country?.label
+  );
+
+  const years = [];
+  for (let year = 1980; year <= 2023; year++) {
+    years.push({ label: year, value: year });
+  }
+
   return (
     <div>
-      <Form>
+      <Form layout="vertical">
         <Form.Item style={{ marginBottom: "5px" }} label="Degree">
           <AutoComplete
-            onChange={(value) => setDegreeKey(value)}
-            options={degrees}
+            onChange={(value, option) => {
+              setDegree({ label: value });
+              refetchDegrees();
+            }}
+            onSelect={(value, option) => {
+              setDegree({ value: option.value, label: option.label });
+            }}
+            options={getDegrees?.data?.map((d) => {
+              return {
+                label: d.name,
+                value: d.id,
+              };
+            })}
+            value={degree?.label}
+          />
+        </Form.Item>
+        <Form.Item style={{ marginBottom: "5px" }} label="Institute">
+          <AutoComplete
+            onChange={(value, option) => {
+              setInstitute({ label: value });
+              refetchIns();
+            }}
+            onSelect={(value, option) => {
+              setInstitute({ value: option.value, label: option.label });
+            }}
+            options={getInstitutes?.data?.map((d) => {
+              return {
+                label: d.name,
+                value: d.id,
+              };
+            })}
+            value={institute?.label}
+          />
+        </Form.Item>
+        <Form.Item label="Country" style={{ marginBottom: "5px" }}>
+          <AutoComplete
+            onChange={(value, option) => {
+              setCountry({ label: value });
+              refetchCountry();
+            }}
+            onSelect={(value, option) => {
+              setCountry({ value: option.value, label: option.label });
+            }}
+            options={getCountries?.data?.map((d) => {
+              return {
+                label: d.name,
+                value: d.id,
+              };
+            })}
+            value={country?.label}
           />
         </Form.Item>
         <Form.Item style={{ marginBottom: "5px" }}>
-          <Select placeholder="Select institution">
-            <Option value="dmc">Dhaka Medical College, Dhaka</Option>
-            <Option value="bpt">Sir Salimullah Medical college, Dhaka</Option>
-          </Select>
-        </Form.Item>
-        <Form.Item style={{ marginBottom: "5px" }}>
-          <Select defaultValue="bangladesh" placeholder="Select Country">
-            <Option value="bangladesh">Bangladesh</Option>
-            <Option value="usa">USA</Option>
-          </Select>
-        </Form.Item>
-        <Form.Item style={{ marginBottom: "5px" }}>
-          <Select placeholder="Select passing year">
-            <Option value="2023">2023</Option>
-            <Option value="2022">2022</Option>
-            <Option value="2021">2021</Option>
-          </Select>
+          <Select placeholder="Select passing year" options={years} />
         </Form.Item>
       </Form>
     </div>

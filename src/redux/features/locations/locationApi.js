@@ -3,11 +3,11 @@ import { store } from "../../store";
 
 const token = store.getState()?.auth?.accessToken;
 
-const chemistApi = apiSlice.injectEndpoints({
+const locationApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getCountries: builder.query({
-      query: (id) => ({
-        url: `/api/v1/locations/countries`,
+      query: (search) => ({
+        url: `/api/v1/locations/countries?search=${search}`,
         method: "GET",
       }),
       invalidatesTags: ["Location"],
@@ -42,5 +42,5 @@ export const {
   useGetCountriesQuery,
   useGetDistrictsQuery,
   useGetUpazilasQuery,
-} = chemistApi;
-export default chemistApi;
+} = locationApi;
+export default locationApi;
