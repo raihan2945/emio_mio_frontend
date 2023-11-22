@@ -19,6 +19,7 @@ const chamberApi = apiSlice.injectEndpoints({
         };
       },
       invalidatesTags: ["Degree"],
+      providesTags : ["Degree"]
     }),
     getDoctorDegrees: builder.query({
       query: (id) => {
@@ -60,6 +61,7 @@ const chamberApi = apiSlice.injectEndpoints({
         },
       }),
       invalidatesTags: ["Degree"],
+      providesTags : ["Degree"]
     }),
     updateDoctorDegree: builder.mutation({
       query: ({ id, data }) => ({
@@ -71,6 +73,7 @@ const chamberApi = apiSlice.injectEndpoints({
         },
       }),
       invalidatesTags: ["Degree"],
+      providesTags : ["Degree"]
     }),
     deleteDoctorDegree: builder.mutation({
       query: (id) => ({
@@ -81,6 +84,7 @@ const chamberApi = apiSlice.injectEndpoints({
         },
       }),
       invalidatesTags: ["Degree"],
+      providesTags : ["Degree"]
     }),
   }),
   overrideExisting: true,
