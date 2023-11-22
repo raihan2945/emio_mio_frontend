@@ -11,91 +11,127 @@ import {
   Divider,
   Tabs,
   Modal,
+  AutoComplete,
+  Popconfirm,
 } from "antd";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import { BsFillCheckCircleFill } from "react-icons/bs";
 import { SettingOutlined, CaretRightOutlined } from "@ant-design/icons";
 import "../../pages/Doctor/profile.css";
+import DegreeForm from "../Degree/DegreeForm";
+import {
+  useDeleteDoctorDegreeMutation,
+  useGetDoctorDegreesQuery,
+} from "../../redux/features/degree/degreeApi";
 
 const { Panel } = Collapse;
 const { Option } = Select;
 
-const Degrees = () => {
+const Degrees = ({ doctor, success, error }) => {
   const [messageApi, contextHolder] = message.useMessage();
 
+  const { data: getDegrees, refetch } = useGetDoctorDegreesQuery(doctor?.id);
+
+  const [
+    deleteDoctorDegree,
+    { error: deleteError, status: deleteStatus, isSuccess: deleteSucces },
+  ] = useDeleteDoctorDegreeMutation();
+
   const [isAddDegree, setAddDegree] = useState(false);
+  const [updateDegree, setUpdateDegree] = useState();
 
-  const success = () => {
-    messageApi.open({
-      type: "success",
-      content: <div style={{}}> Doctor data is updated</div>,
-      className: "custom-class",
-      style: {
-        marginTop: "10vh",
-      },
-      duration: 2,
-      icon: (
-        <BsFillCheckCircleFill
-          style={{ color: "green", fontSize: "1.5rem", marginBottom: ".5rem" }}
-        />
-      ),
-    });
+  useEffect(() => {
+    refetch();
+  }, []);
+
+  useEffect(() => {
+    if (deleteError) {
+      if (deleteError.status == 400) {
+        deleteError.data.error.map((er) => {
+          return error(er);
+        });
+      }
+      if (deleteError.status == 500) {
+        error("Server Error : 500");
+      }
+    }
+    if (deleteSucces) {
+      success("Degree deleted successfully");
+      refetch();
+    }
+  }, [deleteStatus, deleteSucces, deleteError]);
+
+  const deleteDegree = (id) => {
+    deleteDoctorDegree(id);
   };
-
-  const degrees = [
-    {
-      name: "FRCS in Cardiology",
-      ins: "Khulna Medical College, Khulna, 1980",
-    },
-  ];
 
   return (
     <>
       <div>
-        {degrees?.map((d) => {
-          return (
-            <Card style={{ padding: "0", marginBottom: "5px" }}>
-              <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "start",
-                }}
-              >
-                <div>
-                  <p style={{ margin: 0 }}>{d.name}</p>
-                  <p style={{ margin: 0, fontSize: ".7rem", color: "gray" }}>
-                    {d.ins}
-                  </p>
-                </div>
+        {Array.isArray(getDegrees?.data) &&
+          getDegrees?.data?.map((d) => {
+            return (
+              <Card style={{ padding: "0", marginBottom: "5px" }}>
                 <div
-                  style={{ display: "flex", alignItems: "center", gap: "5px" }}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "start",
+                  }}
                 >
-                  <div
-                    style={{
-                      border: "1px solid green",
-                      padding: "3px 5px",
-                      borderRadius: "3px",
-                    }}
-                    onClick={()=>setAddDegree(true)}
-                  >
-                    <AiFillEdit style={{ color: "green", fontSize: "1rem" }} />
+                  <div>
+                    <p style={{ margin: 0 }}>
+                      {d.degree_name}
+                      {d.sector_name && " in "} {d.sector_name}
+                    </p>
+                    <p style={{ margin: 0, fontSize: ".7rem", color: "gray" }}>
+                      {d.institute_name}
+                    </p>
                   </div>
                   <div
                     style={{
-                      border: "1px solid red",
-                      padding: "3px 5px",
-                      borderRadius: "3px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "5px",
                     }}
                   >
-                    <AiFillDelete style={{ color: "red", fontSize: "1rem" }} />
+                    <div
+                      style={{
+                        border: "1px solid green",
+                        padding: "3px 5px",
+                        borderRadius: "3px",
+                      }}
+                      onClick={() => setUpdateDegree(d)}
+                    >
+                      <AiFillEdit
+                        style={{ color: "green", fontSize: "1rem" }}
+                      />
+                    </div>
+                    <Popconfirm
+                      title="Delete the degree"
+                      description="Are you sure to delete this degree?"
+                      onConfirm={() => deleteDegree(d.id)}
+                      okText="Yes"
+                      cancelText="No"
+                    >
+                      <div
+                        style={{
+                          border: "1px solid red",
+                          padding: "3px 5px",
+                          borderRadius: "3px",
+                        }}
+                      >
+                        <AiFillDelete
+                          style={{ color: "red", fontSize: "1rem" }}
+                        />
+                      </div>
+                    </Popconfirm>
                   </div>
                 </div>
-              </div>
-            </Card>
-          );
-        })}
+              </Card>
+            );
+          })}
         <div style={{ width: "100%", textAlign: "center" }}>
           <Button
             onClick={() => setAddDegree(true)}
@@ -107,41 +143,28 @@ const Degrees = () => {
         </div>
       </div>
       <Modal
-        title="Add New Degree"
+        title={updateDegree ? "Update Degree" : "Add new Degree"}
         centered
-        open={isAddDegree}
+        open={isAddDegree || updateDegree}
         onOk={() => setAddDegree(false)}
-        onCancel={() => setAddDegree(false)}
+        onCancel={() => {
+          setAddDegree(false);
+          setUpdateDegree(null);
+        }}
         okText="Add"
+        footer={null}
       >
-        <Form>
-          <Form.Item style={{ marginBottom: "5px" }}>
-            <Select placeholder="Select Degree">
-              <Option value="bds">BDS</Option>
-              <Option value="bpt">BPT</Option>
-              <Option value="bhms">BHMS</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item style={{ marginBottom: "5px" }}>
-            <Select placeholder="Select institution">
-              <Option value="dmc">Dhaka Medical College, Dhaka</Option>
-              <Option value="bpt">Sir Salimullah Medical college, Dhaka</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item style={{ marginBottom: "5px" }}>
-            <Select defaultValue="bangladesh" placeholder="Select Country">
-              <Option value="bangladesh">Bangladesh</Option>
-              <Option value="usa">USA</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item style={{ marginBottom: "5px" }}>
-            <Select placeholder="Select passing year">
-              <Option value="2023">2023</Option>
-              <Option value="2022">2022</Option>
-              <Option value="2021">2021</Option>
-            </Select>
-          </Form.Item>
-        </Form>
+        <DegreeForm
+          cancel={() => {
+            setAddDegree(false);
+            setUpdateDegree(null);
+          }}
+          doctor={doctor}
+          success={success}
+          error={error}
+          refetch={refetch}
+          updateDegree={updateDegree}
+        />
       </Modal>
     </>
   );

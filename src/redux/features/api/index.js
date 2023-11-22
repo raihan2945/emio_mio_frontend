@@ -2,8 +2,8 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { userLoggedOut } from '../auth/authSlice';
 
 // const bUrl = "http://172.16.16.126:6070"
-// const bUrl = "http://localhost:6049"
-const bUrl = "http://116.68.200.97:6049";
+const bUrl = "http://localhost:6049"
+// const bUrl = "http://116.68.200.97:6049";
 
 const baseQuery = fetchBaseQuery({
   baseUrl:bUrl,
@@ -26,7 +26,7 @@ const apiSlice = createApi({
     }
     return result;
   },
-  tagTypes: ['User','Chemist', 'Doctor', 'Location', 'Chamber', 'Hospital', 'Product'],
+  tagTypes: ['User','Chemist', 'Doctor', 'Location', 'Chamber', 'Hospital', 'Product', 'Degree','Institute'],
   endpoints: (builder) => ({}),
 });
 
