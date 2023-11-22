@@ -1,23 +1,23 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { userLoggedOut } from '../auth/authSlice';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { userLoggedOut } from "../auth/authSlice";
 
 // const bUrl = "http://172.16.16.126:6070"
-const bUrl = "http://localhost:6049"
-// const bUrl = "http://116.68.200.97:6049";
+// const bUrl = "http://localhost:6049";
+const bUrl = "http://116.68.200.97:6049";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl:bUrl,
+  baseUrl: bUrl,
   prepareHeaders: async (headers, { getState }) => {
     const token = getState()?.auth?.accessToken;
     if (token) {
-      headers.set('Authorization', `Bearer ${token}`);
+      headers.set("Authorization", `Bearer ${token}`);
     }
     return headers;
   },
 });
 
 const apiSlice = createApi({
-  reducerPath: 'api',
+  reducerPath: "api",
   baseQuery: async (args, api, extraOptions) => {
     let result = await baseQuery(args, api, extraOptions);
 
@@ -26,7 +26,18 @@ const apiSlice = createApi({
     }
     return result;
   },
-  tagTypes: ['User','Chemist', 'Doctor', 'Location', 'Chamber', 'Hospital', 'Product', 'Degree','Institute'],
+  tagTypes: [
+    "User",
+    "Chemist",
+    "Doctor",
+    "Location",
+    "Chamber",
+    "Hospital",
+    "Product",
+    "Degree",
+    "Institute",
+    "Experience"
+  ],
   endpoints: (builder) => ({}),
 });
 

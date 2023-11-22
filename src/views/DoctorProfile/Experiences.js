@@ -2,188 +2,169 @@ import React, { useState, useRef, useEffect } from "react";
 import {
   Button,
   Card,
-  Form,
-  Input,
   Select,
-  DatePicker,
   message,
   Collapse,
-  Divider,
-  Tabs,
   Modal,
-  Checkbox,
+  Popconfirm,
 } from "antd";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
-import { BsFillCheckCircleFill } from "react-icons/bs";
-import { SettingOutlined, CaretRightOutlined } from "@ant-design/icons";
 import "../../pages/Doctor/profile.css";
+import DegreeForm from "../Degree/DegreeForm";
+import {
+  useDeleteDoctorDegreeMutation,
+  useGetDoctorDegreesQuery,
+} from "../../redux/features/degree/degreeApi";
+import ExperienceForm from "../Experience/ExperienceForm";
+import {
+  useGetDoctorExperiencesQuery,
+  useDeleteDoctorExperienceMutation,
+} from "../../redux/features/experience/degreeApi";
+import moment from "moment";
 
-const { Panel } = Collapse;
-const { Option } = Select;
+const Experiences = ({ doctor, success, error }) => {
+  const { data: getDatas, refetch } = useGetDoctorExperiencesQuery(doctor?.id);
 
-const Experiences = () => {
-  const [messageApi, contextHolder] = message.useMessage();
+  const [
+    deleteDoctorExperience,
+    { error: deleteError, status: deleteStatus, isSuccess: deleteSucces },
+  ] = useDeleteDoctorExperienceMutation();
 
-  const [isAddDegree, setAddDegree] = useState(false);
+  const [isAddItem, setAddItem] = useState(false);
+  const [updateItem, setUpdateitem] = useState();
 
-  const success = () => {
-    messageApi.open({
-      type: "success",
-      content: <div style={{}}> Doctor data is updated</div>,
-      className: "custom-class",
-      style: {
-        marginTop: "10vh",
-      },
-      duration: 2,
-      icon: (
-        <BsFillCheckCircleFill
-          style={{ color: "green", fontSize: "1.5rem", marginBottom: ".5rem" }}
-        />
-      ),
-    });
+  useEffect(() => {
+    refetch();
+  }, []);
+
+  useEffect(() => {
+    if (deleteError) {
+      if (deleteError.status == 400) {
+        deleteError.data.error.map((er) => {
+          return error(er);
+        });
+      }
+      if (deleteError.status == 500) {
+        error("Server Error : 500");
+      }
+    }
+    if (deleteSucces) {
+      success("Degree deleted successfully");
+      refetch();
+    }
+  }, [deleteStatus, deleteSucces, deleteError]);
+
+  const deleteExperience = (id) => {
+    deleteDoctorExperience(id);
   };
 
-  const degrees = [
-    {
-      name: "Prof. Dr.",
-      ins: "Najarpur Community Clinic - Raypura",
-      date: "Apr,2020 - March,2023",
-    },
-  ];
+  // console.log("exp is  : ", getDatas)
 
   return (
     <>
       <div>
-        {degrees?.map((d) => {
-          return (
-            <Card style={{ padding: "0", marginBottom: "5px" }}>
-              <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "start",
-                }}
-              >
-                <div>
-                  <p style={{ margin: 0 }}>{d.name}</p>
-                  <p style={{ margin: 0, fontSize: ".7rem", color: "gray" }}>
-                    {d.ins}
-                  </p>
-                  <p style={{ margin: 0, fontSize: ".7rem", color: "gray" }}>
-                    {d.date}
-                  </p>
-                </div>
+        {Array.isArray(getDatas?.data) &&
+          getDatas?.data?.map((d) => {
+            return (
+              <Card style={{ padding: "0", marginBottom: "5px" }}>
                 <div
-                  style={{ display: "flex", alignItems: "center", gap: "5px" }}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "start",
+                  }}
                 >
-                  <div
-                    style={{
-                      border: "1px solid green",
-                      padding: "3px 5px",
-                      borderRadius: "3px",
-                    }}
-                    onClick={() => setAddDegree(true)}
-                  >
-                    <AiFillEdit style={{ color: "green", fontSize: "1rem" }} />
+                  <div>
+                    <p style={{ margin: 0 }}>{d?.designation}</p>
+                    <p style={{ margin: 0, fontSize: ".7rem", color: "gray" }}>
+                      {d?.institute_name}
+                    </p>
+                    <p style={{ margin: 0, fontSize: ".7rem", color: "gray" }}>
+                      {moment(d?.start_date).format("d MMM YYYY")}{" "}
+                      {d?.is_currently_working == 1
+                        ? "- Current"
+                        : d?.end_date &&
+                          ` - ${moment(d?.end_date).format("d MMM YYYY")}`}
+                    </p>
                   </div>
                   <div
                     style={{
-                      border: "1px solid red",
-                      padding: "3px 5px",
-                      borderRadius: "3px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "5px",
                     }}
                   >
-                    <AiFillDelete style={{ color: "red", fontSize: "1rem" }} />
+                    <div
+                      style={{
+                        border: "1px solid green",
+                        padding: "3px 5px",
+                        borderRadius: "3px",
+                      }}
+                      onClick={() => setUpdateitem(d)}
+                    >
+                      <AiFillEdit
+                        style={{ color: "green", fontSize: "1rem" }}
+                      />
+                    </div>
+                    <Popconfirm
+                      title="Delete the degree"
+                      description="Are you sure to delete this degree?"
+                      onConfirm={() => deleteDoctorExperience(d.id)}
+                      okText="Yes"
+                      cancelText="No"
+                    >
+                    <div
+                      style={{
+                        border: "1px solid red",
+                        padding: "3px 5px",
+                        borderRadius: "3px",
+                      }}
+                      
+                    >
+                      <AiFillDelete
+                        style={{ color: "red", fontSize: "1rem" }}
+                      />
+                    </div>
+                    </Popconfirm>
                   </div>
                 </div>
-              </div>
-            </Card>
-          );
-        })}
+              </Card>
+            );
+          })}
         <div style={{ width: "100%", textAlign: "center" }}>
           <Button
-            onClick={() => setAddDegree(true)}
+            onClick={() => setAddItem(true)}
             type="primary"
             style={{ textAlign: "center", width: "100%" }}
           >
-            Add New Experience
+            Add New Degree
           </Button>
         </div>
       </div>
       <Modal
-        title="Add New Degree"
+        title={updateItem ? "Update Experience" : "Add New Experience"}
         centered
-        open={isAddDegree}
-        onOk={() => setAddDegree(false)}
-        onCancel={() => setAddDegree(false)}
+        open={isAddItem || updateItem}
+        onOk={() => setAddItem(false)}
+        onCancel={() => {
+          setAddItem(false);
+          setUpdateitem(null);
+        }}
         okText="Add"
+        footer={null}
       >
-        <Form>
-          <Form.Item style={{ marginBottom: "5px" }}>
-            <Select placeholder="Select Designation">
-              <Option value="bds">Dr.</Option>
-              <Option value="bpt">Prof. Dr</Option>
-              <Option value="bhms">Assist. Prof Dr.</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item style={{ marginBottom: "5px" }}>
-            <Select placeholder="Select institution">
-              <Option value="dmc">Dhaka Medical College, Dhaka</Option>
-              <Option value="bpt">Sir Salimullah Medical college, Dhaka</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Starting : "
-            style={{ width: "100%", flex: 1, marginBottom: "5px" }}
-          >
-            <div style={{ display: "flex", gap: ".5rem" }}>
-              <Select placeholder="Select Starting Year">
-                <Option value=""></Option>
-                <Option value="2023">2023</Option>
-                <Option value="2022">2022</Option>
-                <Option value="2021">2021</Option>
-              </Select>
-
-              <Select placeholder="Select Starting Month">
-                <Option value=""></Option>
-                <Option value="2023">January</Option>
-                <Option value="2022">February</Option>
-                <Option value="2021">March</Option>
-                <Option value="2021">April</Option>
-                <Option value="2021">June</Option>
-                <Option value="2021">July</Option>
-              </Select>
-            </div>
-          </Form.Item>
-          <Form.Item style={{ width: "100%", flex: 1, marginBottom: "5px" }}>
-            <Checkbox>Currently Working Here</Checkbox>
-          </Form.Item>
-          <Form.Item
-            label="Ending : "
-            style={{ width: "100%", flex: 1, marginBottom: "5px" }}
-          >
-            <div style={{ display: "flex", gap: ".5rem" }}>
-              <Select placeholder="Ending Year">
-                <Option value=""></Option>
-                <Option value="2023">2023</Option>
-                <Option value="2022">2022</Option>
-                <Option value="2021">2021</Option>
-              </Select>
-
-              <Select placeholder="Ending Month">
-                <Option value=""></Option>
-                <Option value="2023">January</Option>
-                <Option value="2022">February</Option>
-                <Option value="2021">March</Option>
-                <Option value="2021">April</Option>
-                <Option value="2021">June</Option>
-                <Option value="2021">July</Option>
-              </Select>
-            </div>
-          </Form.Item>
-        </Form>
+        <ExperienceForm
+          cancel={() => {
+            setAddItem(false);
+            setUpdateitem(null);
+          }}
+          doctor={doctor}
+          success={success}
+          error={error}
+          refetch={refetch}
+          update={updateItem}
+        />
       </Modal>
     </>
   );

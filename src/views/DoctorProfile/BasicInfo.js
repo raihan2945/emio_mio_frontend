@@ -171,7 +171,7 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
     updateDoctor({ id: doctor?.id, data: form });
   };
 
-  console.log("doctor is ; ", doctor);
+  // console.log("doctor is ; ", doctor);
 
   return (
     <div>

@@ -2,21 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import {
   Button,
   Card,
-  Form,
-  Input,
   Select,
-  DatePicker,
   message,
   Collapse,
-  Divider,
-  Tabs,
   Modal,
-  AutoComplete,
   Popconfirm,
 } from "antd";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
-import { BsFillCheckCircleFill } from "react-icons/bs";
-import { SettingOutlined, CaretRightOutlined } from "@ant-design/icons";
 import "../../pages/Doctor/profile.css";
 import DegreeForm from "../Degree/DegreeForm";
 import {
@@ -24,12 +16,7 @@ import {
   useGetDoctorDegreesQuery,
 } from "../../redux/features/degree/degreeApi";
 
-const { Panel } = Collapse;
-const { Option } = Select;
-
 const Degrees = ({ doctor, success, error }) => {
-  const [messageApi, contextHolder] = message.useMessage();
-
   const { data: getDegrees, refetch } = useGetDoctorDegreesQuery(doctor?.id);
 
   const [
