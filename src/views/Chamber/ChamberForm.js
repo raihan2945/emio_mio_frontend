@@ -37,19 +37,40 @@ const ChamberForm = ({
   return (
     <Form layout="vertical">
       <Form.Item style={{ marginBottom: "5px" }}>
-        <Card style={{ padding: "0px" }}>
-          <p style={{ fontWeight: "500", margin: 0 }}>
+        <Card style={{ padding: "0px", backgroundColor: "white" }}>
+          <p
+            style={{
+              fontWeight: "500",
+              margin: 0,
+              color: "#006bb1",
+              fontSize: ".9rem",
+            }}
+          >
             Hospital : {selectdHospital?.name}{" "}
           </p>
-          <p style={{ fontWeight: "400", margin: 0 }}>
-            Address :{selectdHospital?.upazila}-{selectdHospital?.full_address}
+          <p
+            style={{
+              fontWeight: "400",
+              margin: 0,
+              color: "#212121",
+            }}
+          >
+            <strong>Address : </strong>  {selectdHospital?.upazila}-{selectdHospital?.full_address}
           </p>
           <Button
+            size="small"
             onClick={() => setIsHospital(true)}
-            type="primary"
-            style={{ marginTop: "5px" }}
+            // type="primary"
+            style={{
+              marginTop: "5px",
+              fontWeight: "400",
+              boxShadow: "none",
+              backgroundColor: "#006bb1",
+              color: "white",
+              border:"none"
+            }}
           >
-            Add/Change
+            {selectdHospital ? "Change" : "Add"}
           </Button>
         </Card>
       </Form.Item>
