@@ -384,13 +384,13 @@ body {
 }
 
 .layout-dashboard .ant-layout-header {
-  background: transparent;
+  background: #FFFFFF;
   height: auto;
   padding: 16px;
-  margin: 10px 4px;
   line-height: inherit;
-  border-radius: 12px;
   transition: 0.2s;
+  margin-bottom: 1rem;
+  /* box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px; */
 }
 
 .layout-dashboard .ant-breadcrumb > span .ant-breadcrumb-link a {

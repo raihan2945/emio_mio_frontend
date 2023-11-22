@@ -8,9 +8,9 @@ function Footer() {
     <AntFooter style={{ background: "#fafafa" }}>
       <Row className="just">
         <Col xs={24} md={12} lg={12}>
-          <div className="copyright" style={{ fontSize: ".7rem" }}>
+          <div className="copyright" style={{ fontSize: ".8rem" }}>
             Developed by
-            <a href="https://impalaintech.com/" className="font-weight-bold" target="_blank">
+            <a style={{color:"#006BB1"}} href="https://impalaintech.com/" className="font-weight-bold" target="_blank">
               Impala Intech Limited
             </a>
           </div>

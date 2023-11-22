@@ -139,7 +139,8 @@ function Home() {
       persent: "+20%",
       icon: <img src="icons/doctor.png" />,
       bnb: "bnb2",
-      link:"/doctors"
+      link: "/doctors",
+      sub_title:"All doctors from your area"
     },
     {
       today: "All",
@@ -147,7 +148,8 @@ function Home() {
       persent: "-20%",
       icon: <img src="icons/pharmacist.png" />,
       bnb: "redtext",
-      link:"/chemists"
+      link: "/chemists",
+      sub_title:"All chemists from your area"
     },
     {
       today: "All",
@@ -155,7 +157,8 @@ function Home() {
       persent: "10%",
       icon: <img src="icons/grouping.png" />,
       bnb: "bnb2",
-      link:"/campaigns"
+      link: "/campaigns",
+      sub_title:"All active campaigns"
     },
   ];
 
@@ -174,14 +177,19 @@ function Home() {
               className="mb-24"
             >
               <NavLink to={c.link}>
-                <Card bordered={false} className="criclebox ">
+                <Card
+                  // style={{ backgroundColor: "white" }}
+                  bordered={false}
+                  // className="criclebox "
+                >
                   <div className="number">
                     <Row align="middle" gutter={[24, 0]}>
                       <Col xs={18}>
                         {/* <span>{c.today}</span> */}
-                        <Title style={{ margin: 0 }} level={4}>
+                        <Title style={{ margin: 0,color:"#006BB1", fontSize:"1.5rem"}}>
                           {c.title} <small className={c.bnb}></small>
                         </Title>
+                        <p style={{margin:"0", opacity:".8", fontSize:".8rem"}}>{c?.sub_title}</p>
                       </Col>
                       <Col xs={6}>
                         <div>{c.icon}</div>
