@@ -124,9 +124,12 @@ const Chambers = ({ doctor, success, error, warning }) => {
         // console.log("days is :", days);
         setValue(key, days);
       } else if (key == "hospital") {
-        const hos = chamber[key]
+        const hos = chamber[key];
         // console.log("hos is : ", hos)
         setSelectedHospital(chamber[key]);
+      }
+      else if(key == "speciality"){
+        setValue(key, {value:chamber[key], label:chamber?.speciality_name})
       } else {
         setValue(key, chamber[key]);
       }
@@ -145,22 +148,32 @@ const Chambers = ({ doctor, success, error, warning }) => {
     const submitData = {};
     Object.keys(formValues).forEach((key) => {
       if (formValues[key]) {
-        submitData[key] = formValues[key];
+        if (key == "speciality") {
+          submitData[key] = watch("speciality")?.value;
+        } else {
+          submitData[key] = formValues[key];
+        }
       }
     });
     submitData.dr_id = doctor?.id;
     submitData.hospital_id = selectdHospital?.id;
+
+    console.log("submit data is : ", submitData)
 
     if (editChamber) {
       delete submitData.updated_at;
       delete submitData.created_at;
       delete submitData.uuid;
       delete submitData.hosptial;
+      delete submitData.speciality_name;
+      
       updateChamber({ id: editChamber?.id, data: submitData });
     } else {
       createChamber(submitData);
     }
   };
+
+  console.log("speciality is : ", watch("speciality"));
 
   useEffect(() => {
     refetchChambers();
@@ -479,8 +492,8 @@ const Chambers = ({ doctor, success, error, warning }) => {
           setSelectedHospital={setSelectedHospital}
           success={success}
           warning={warning}
-          error ={error}
-       />
+          error={error}
+        />
       </Modal>
     </>
   );

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import { Button, Card, Form, Select, TimePicker } from "antd";
+import { AutoComplete, Button, Card, Form, Select, TimePicker } from "antd";
 import moment from "moment";
+import { useGetAllSpecialtyQuery } from "../../redux/features/speciality/specialityApi";
 
 const ChamberForm = ({
   selectdHospital,
@@ -22,17 +23,8 @@ const ChamberForm = ({
     { label: "Fri", value: "Fri" },
   ];
 
-  //   useEffect(() => {
-  //     return () => {
-  //         console.log("called================")
-  //       if (chamber) {
-  //         console.log("chamber is : ", chamber)
-  //         Object.keys(chamber).forEach(key=>{
-  //             setValue('key', undefined)
-  //         })
-  //       }
-  //     };
-  //   }, []);
+  const { data: getSpecailties, refetch: refetchSpeciality } =
+    useGetAllSpecialtyQuery(watch("speciality")?.label);
 
   return (
     <Form layout="vertical">
@@ -55,7 +47,8 @@ const ChamberForm = ({
               color: "#212121",
             }}
           >
-            <strong>Address : </strong>  {selectdHospital?.upazila}-{selectdHospital?.full_address}
+            <strong>Address : </strong> {selectdHospital?.upazila}-
+            {selectdHospital?.full_address}
           </p>
           <Button
             size="small"
@@ -67,7 +60,7 @@ const ChamberForm = ({
               boxShadow: "none",
               backgroundColor: "#006bb1",
               color: "white",
-              border:"none"
+              border: "none",
             }}
           >
             {selectdHospital ? "Change" : "Add"}
@@ -80,6 +73,28 @@ const ChamberForm = ({
           {...register("add_address")}
           type="text"
           className="form-control"
+        />
+      </Form.Item>
+
+      <Form.Item style={{ marginBottom: "5px" }} label="Speciality">
+        <AutoComplete
+          onChange={(value, option) => {
+            setValue("speciality", { label: value });
+            refetchSpeciality();
+          }}
+          onSelect={(value, option) => {
+            setValue("speciality", {
+              value: option.value,
+              label: option.label,
+            });
+          }}
+          options={getSpecailties?.data?.map((d) => {
+            return {
+              label: d.name,
+              value: d.id,
+            };
+          })}
+          value={watch("speciality")?.label}
         />
       </Form.Item>
 
