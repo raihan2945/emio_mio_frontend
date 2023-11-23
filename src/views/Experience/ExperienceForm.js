@@ -6,7 +6,7 @@ import moment from "moment";
 import {
   useCreateDoctorExperienceMutation,
   useUpdateDoctorExperienceMutation,
-} from "../../redux/features/experience/degreeApi";
+} from "../../redux/features/experience/experienceApi";
 
 const { Option } = Select;
 
@@ -170,7 +170,7 @@ const ExperienceForm = ({
           {watch("")}
           <DatePicker
             disabled={watch("is_currently_working") == 1 ? true : false}
-            onChange={(date, dateString) => setValue("start_date", dateString)}
+            onChange={(date, dateString) => setValue("end_date", dateString)}
             style={{ width: "100%" }}
             format="YYYY-MM-DD"
             value={watch("end_date") && moment(watch("end_date", "YYYY-MM-DD"))}

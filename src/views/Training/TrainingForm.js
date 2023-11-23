@@ -6,7 +6,8 @@ import moment from "moment";
 import {
   useCreateDoctorExperienceMutation,
   useUpdateDoctorExperienceMutation,
-} from "../../redux/features/experience/degreeApi";
+} from "../../redux/features/experience/experienceApi";
+import { useCreateDoctorTrainingMutation, useUpdateDoctorTrainingMutation } from "../../redux/features/training/trainingApi";
 
 const designations = [
   { value: "Dr.", label: "Dr." },
@@ -26,27 +27,27 @@ const TrainingForm = ({ cancel, doctor, success, error, refetch, update }) => {
     watch("institute_name")
   );
   const [
-    createDoctorExperience,
+    createTraining,
     { error: createError, status: createStatus, isSuccess: createSuccess },
-  ] = useCreateDoctorExperienceMutation();
+  ] = useCreateDoctorTrainingMutation();
 
   const [
-    updateDoctorExperience,
+    updateTraining,
     { error: updateError, status: updateStatus, isSuccess: updateSuccess },
-  ] = useUpdateDoctorExperienceMutation();
+  ] = useUpdateDoctorTrainingMutation();
 
   const submitExperience = () => {
     const formValues = getValues();
-    // console.log("form Values is : ", formValues);
+
     if (update) {
       delete formValues.uuid;
       delete formValues.dr_id;
       delete formValues.created_at;
       delete formValues.updated_at;
-      updateDoctorExperience({ id: update?.id, data: formValues });
+      updateTraining({ id: update?.id, data: formValues });
     } else {
       formValues.dr_id = doctor?.id;
-      createDoctorExperience(formValues);
+      createTraining(formValues);
     }
   };
 
@@ -62,7 +63,7 @@ const TrainingForm = ({ cancel, doctor, success, error, refetch, update }) => {
       }
     }
     if (createSuccess) {
-      success("Experience created successfully");
+      success("Training created successfully");
       cancel();
       refetch();
     }
@@ -80,7 +81,7 @@ const TrainingForm = ({ cancel, doctor, success, error, refetch, update }) => {
       }
     }
     if (updateSuccess) {
-      success("Experience updated successfully");
+      success("Training updated successfully");
       cancel();
       refetch();
     }
@@ -99,12 +100,8 @@ const TrainingForm = ({ cancel, doctor, success, error, refetch, update }) => {
   return (
     <div>
       <Form>
-        <Form.Item label="Designation" style={{ marginBottom: "5px" }}>
-          <AutoComplete
-            onSelect={(value) => setValue("designation", value)}
-            options={designations}
-            value={watch("designation")}
-          />
+        <Form.Item label="Training On" style={{ marginBottom: "5px" }}>
+          <input {...register("training_on")} className="form-control" />
         </Form.Item>
 
         <Form.Item label="Institute" style={{ marginBottom: "5px" }}>
@@ -128,7 +125,7 @@ const TrainingForm = ({ cancel, doctor, success, error, refetch, update }) => {
         </Form.Item>
 
         <Form.Item
-          label="Starting : "
+          label="Start Date "
           style={{ width: "100%", flex: 1, marginBottom: "5px" }}
         >
           <DatePicker
@@ -140,28 +137,15 @@ const TrainingForm = ({ cancel, doctor, success, error, refetch, update }) => {
             }
           />
         </Form.Item>
-        <Form.Item style={{ width: "100%", flex: 1, marginBottom: "5px" }}>
-          <Checkbox
-            onChange={(e) => {
-              if (e.target.checked) {
-                setValue("is_currently_working", 1);
-              } else {
-                setValue("is_currently_working", 0);
-              }
-            }}
-            checked={watch("is_currently_working") == 1 ? true : false}
-          >
-            Currently Working Here
-          </Checkbox>
-        </Form.Item>
+
         <Form.Item
-          label="Ending : "
+          label="End Date"
           style={{ width: "100%", flex: 1, marginBottom: "5px" }}
         >
           {watch("")}
           <DatePicker
             disabled={watch("is_currently_working") == 1 ? true : false}
-            onChange={(date, dateString) => setValue("start_date", dateString)}
+            onChange={(date, dateString) => setValue("end_date", dateString)}
             style={{ width: "100%" }}
             format="YYYY-MM-DD"
             value={watch("end_date") && moment(watch("end_date", "YYYY-MM-DD"))}
