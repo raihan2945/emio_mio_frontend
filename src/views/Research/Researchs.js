@@ -51,7 +51,7 @@ const Trainings = ({ doctor, success, error }) => {
     refetch();
   }, []);
 
-  console.log("research is  : ", getResearchs);
+  // console.log("research is  : ", getResearchs);
 
   return (
     <div>
