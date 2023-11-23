@@ -3,12 +3,11 @@ import { store } from "../../store";
 
 const token = store.getState()?.auth?.accessToken;
 
-const chamberApi = apiSlice.injectEndpoints({
+const researchApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-   
-    getDoctorExperiences: builder.query({
+    getDoctorResearchs: builder.query({
       query: (id) => {
-        const url = `api/v1/experience/doctor/${id}`;
+        const url = `api/v1/research/doctor/${id}`;
         return (
           id && {
             url: url,
@@ -19,52 +18,54 @@ const chamberApi = apiSlice.injectEndpoints({
           }
         );
       },
-      invalidatesTags: ["Experience"],
+      invalidatesTags: ["Research"],
     }),
 
-    createDoctorExperience: builder.mutation({
+    createDoctorResearch: builder.mutation({
       query: (data) => ({
-        url: `/api/v1/experience/doctor`,
+        url: `/api/v1/research/doctor`,
         method: "POST",
         body: data,
         headers: {
           authorization: `Bearer ${token}`,
         },
       }),
-      invalidatesTags: ["Experience"],
-      providesTags : ["Experience"]
+      invalidatesTags: ["Research"],
+      providesTags: ["Research"],
     }),
-    updateDoctorExperience: builder.mutation({
+
+    updateDoctorResearch: builder.mutation({
       query: ({ id, data }) => ({
-        url: `/api/v1/experience/doctor/${id}`,
+        url: `/api/v1/research/doctor/${id}`,
         method: "PATCH",
         body: data,
         headers: {
           authorization: `Bearer ${token}`,
         },
       }),
-      invalidatesTags: ["Experience"],
-      providesTags : ["Experience"]
+      invalidatesTags: ["Research"],
+      providesTags: ["Research"],
     }),
-    deleteDoctorExperience: builder.mutation({
+
+    deleteDoctorResearch: builder.mutation({
       query: (id) => ({
-        url: `/api/v1/experience/doctor/${id}`,
+        url: `/api/v1/research/doctor/${id}`,
         method: "DELETE",
         headers: {
           authorization: `Bearer ${token}`,
         },
       }),
-      invalidatesTags: ["Experience"],
-      providesTags : ["Experience"]
+      invalidatesTags: ["Research"],
+      providesTags: ["Research"],
     }),
   }),
   overrideExisting: true,
 });
 
 export const {
- useGetDoctorExperiencesQuery,
- useUpdateDoctorExperienceMutation,
- useCreateDoctorExperienceMutation,
- useDeleteDoctorExperienceMutation
-} = chamberApi;
-export default chamberApi;
+  useGetDoctorResearchsQuery,
+  useCreateDoctorResearchMutation,
+  useUpdateDoctorResearchMutation,
+  useDeleteDoctorResearchMutation
+} = researchApi;
+export default researchApi;

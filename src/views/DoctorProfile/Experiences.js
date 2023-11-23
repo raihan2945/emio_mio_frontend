@@ -11,15 +11,11 @@ import {
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import "../../pages/Doctor/profile.css";
 import DegreeForm from "../Degree/DegreeForm";
-import {
-  useDeleteDoctorDegreeMutation,
-  useGetDoctorDegreesQuery,
-} from "../../redux/features/degree/degreeApi";
 import ExperienceForm from "../Experience/ExperienceForm";
 import {
   useGetDoctorExperiencesQuery,
   useDeleteDoctorExperienceMutation,
-} from "../../redux/features/experience/degreeApi";
+} from "../../redux/features/experience/experienceApi";
 import moment from "moment";
 
 const Experiences = ({ doctor, success, error }) => {

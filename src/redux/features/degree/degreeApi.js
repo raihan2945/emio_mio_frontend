@@ -3,7 +3,7 @@ import { store } from "../../store";
 
 const token = store.getState()?.auth?.accessToken;
 
-const chamberApi = apiSlice.injectEndpoints({
+const degreeApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getDegrees: builder.query({
       query: (search) => {
@@ -96,5 +96,5 @@ export const {
   useCreateDoctorDegreeMutation,
   useUpdateDoctorDegreeMutation,
   useDeleteDoctorDegreeMutation,
-} = chamberApi;
-export default chamberApi;
+} = degreeApi;
+export default degreeApi;

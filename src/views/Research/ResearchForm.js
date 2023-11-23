@@ -6,7 +6,8 @@ import moment from "moment";
 import {
   useCreateDoctorExperienceMutation,
   useUpdateDoctorExperienceMutation,
-} from "../../redux/features/experience/degreeApi";
+} from "../../redux/features/experience/experienceApi";
+import { useCreateDoctorResearchMutation, useUpdateDoctorResearchMutation } from "../../redux/features/research/researchApi";
 
 const designations = [
   { value: "Dr.", label: "Dr." },
@@ -26,27 +27,28 @@ const ResearchForm = ({ cancel, doctor, success, error, refetch, update }) => {
     watch("institute_name")
   );
   const [
-    createDoctorExperience,
+    createResearch,
     { error: createError, status: createStatus, isSuccess: createSuccess },
-  ] = useCreateDoctorExperienceMutation();
+  ] = useCreateDoctorResearchMutation();
 
   const [
-    updateDoctorExperience,
+    updateResearch,
     { error: updateError, status: updateStatus, isSuccess: updateSuccess },
-  ] = useUpdateDoctorExperienceMutation();
+  ] = useUpdateDoctorResearchMutation();
 
   const submitExperience = () => {
     const formValues = getValues();
     // console.log("form Values is : ", formValues);
+    // return
     if (update) {
       delete formValues.uuid;
       delete formValues.dr_id;
       delete formValues.created_at;
       delete formValues.updated_at;
-      updateDoctorExperience({ id: update?.id, data: formValues });
+      updateResearch({ id: update?.id, data: formValues });
     } else {
       formValues.dr_id = doctor?.id;
-      createDoctorExperience(formValues);
+      createResearch(formValues);
     }
   };
 
@@ -62,7 +64,7 @@ const ResearchForm = ({ cancel, doctor, success, error, refetch, update }) => {
       }
     }
     if (createSuccess) {
-      success("Experience created successfully");
+      success("Research created successfully");
       cancel();
       refetch();
     }
@@ -80,7 +82,7 @@ const ResearchForm = ({ cancel, doctor, success, error, refetch, update }) => {
       }
     }
     if (updateSuccess) {
-      success("Experience updated successfully");
+      success("Research updated successfully");
       cancel();
       refetch();
     }
@@ -99,72 +101,42 @@ const ResearchForm = ({ cancel, doctor, success, error, refetch, update }) => {
   return (
     <div>
       <Form>
-        <Form.Item label="Designation" style={{ marginBottom: "5px" }}>
-          <AutoComplete
-            onSelect={(value) => setValue("designation", value)}
-            options={designations}
-            value={watch("designation")}
-          />
+        <Form.Item label="Journal Name" style={{ marginBottom: "5px" }}>
+          <input className="form-control" {...register("journal_name")} />
         </Form.Item>
 
-        <Form.Item label="Institute" style={{ marginBottom: "5px" }}>
-          <AutoComplete
-            onChange={(value) => {
-              setValue("institute_name", value);
-              refetchIns();
-            }}
-            onSelect={(value, option) => {
-              setValue("institute_name", option.label);
-              setValue("institute_id", option.value);
-            }}
-            options={getInstitutes?.data?.map((d) => {
-              return {
-                label: d.name,
-                value: d.id,
-              };
-            })}
-            value={watch("institute_name")}
+        <Form.Item label="Type" style={{ marginBottom: "5px" }}>
+          <Select
+            defaultValue={watch("type")}
+            options={[
+              { value: "National", label: "National" },
+              { value: "International", label: "International" },
+            ]}
+            onChange={(value) => setValue("type", value)}
           />
         </Form.Item>
 
         <Form.Item
-          label="Starting : "
+          label="Position : "
+          style={{ width: "100%", flex: 1, marginBottom: "5px" }}
+        >
+          <input className="form-control" {...register("position")} />
+        </Form.Item>
+
+        <Form.Item
+          label="Publication Date : "
           style={{ width: "100%", flex: 1, marginBottom: "5px" }}
         >
           <DatePicker
-            onChange={(date, dateString) => setValue("start_date", dateString)}
+            onChange={(date, dateString) =>
+              setValue("publication_date", dateString)
+            }
             style={{ width: "100%" }}
             format="YYYY-MM-DD"
             value={
-              watch("start_date") && moment(watch("start_date", "YYYY-MM-DD"))
+              watch("publication_date") &&
+              moment(watch("publication_date", "YYYY-MM-DD"))
             }
-          />
-        </Form.Item>
-        <Form.Item style={{ width: "100%", flex: 1, marginBottom: "5px" }}>
-          <Checkbox
-            onChange={(e) => {
-              if (e.target.checked) {
-                setValue("is_currently_working", 1);
-              } else {
-                setValue("is_currently_working", 0);
-              }
-            }}
-            checked={watch("is_currently_working") == 1 ? true : false}
-          >
-            Currently Working Here
-          </Checkbox>
-        </Form.Item>
-        <Form.Item
-          label="Ending : "
-          style={{ width: "100%", flex: 1, marginBottom: "5px" }}
-        >
-          {watch("")}
-          <DatePicker
-            disabled={watch("is_currently_working") == 1 ? true : false}
-            onChange={(date, dateString) => setValue("start_date", dateString)}
-            style={{ width: "100%" }}
-            format="YYYY-MM-DD"
-            value={watch("end_date") && moment(watch("end_date", "YYYY-MM-DD"))}
           />
         </Form.Item>
         <Form.Item
