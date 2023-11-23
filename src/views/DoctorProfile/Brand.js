@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Core from "../../components/brandItems/Core";
-import { Form } from "antd";
+import { Button, Form } from "antd";
 import Support from "../../components/brandItems/Support";
 import Prospect from "../../components/brandItems/Prospect";
 
@@ -13,6 +13,9 @@ const Brand = () => {
       <Core values={values} setValues={setValues} />
       <Support values={values1} setValues={setValues1} />
       <Prospect values={values2} setValues={setValues2} />
+      <div style={{textAlign:"center"}}>
+        <Button type="primary">Save</Button>
+      </div>
     </div>
   );
 };
