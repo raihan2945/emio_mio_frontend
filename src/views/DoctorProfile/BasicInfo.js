@@ -13,8 +13,7 @@ import {
   Tabs,
 } from "antd";
 import { AiOutlineCloudUpload, AiFillSave } from "react-icons/ai";
-import { BsFillCheckCircleFill } from "react-icons/bs";
-import { SettingOutlined, CaretRightOutlined } from "@ant-design/icons";
+import { BsFacebook,BsYoutube, BsTwitter,BsLinkedin } from "react-icons/bs";
 import "../../pages/Doctor/profile.css";
 import Footer from "./Footer";
 import MajorInfo from "./MajorInfo";
@@ -37,7 +36,7 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
   const [previewImage, setPreviewImage] = useState();
   const fileInputRef = useRef();
 
-  const dateFormat = 'YYYY-MM-DD';
+  const dateFormat = "YYYY-MM-DD";
 
   const {
     register,
@@ -127,6 +126,10 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
       whatsapp,
       years_of_experience,
       upazila,
+      facebook, 
+      youtube,
+      linkedin,
+      twitter
     } = formValues;
 
     const payload = {
@@ -141,6 +144,10 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
       whatsapp,
       years_of_experience,
       upazila,
+      facebook, 
+      youtube,
+      linkedin,
+      twitter
     };
 
     const form = new FormData();
@@ -153,7 +160,7 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
       }
     });
 
-    console.log("submit data is : ", submitData);
+    // console.log("submit data is : ", submitData);
 
     if (selectedDivision) {
       form.append("division", selectedDivision?.children);
@@ -494,6 +501,119 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
                     );
                   })}
               </Select>
+            </Form.Item>
+
+            <Divider
+              orientation="center"
+              orientationMargin={0}
+              style={{ marginBottom: "0", fontSize: ".8rem" }}
+            >
+              Social Media
+            </Divider>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={
+                <div
+                  style={{
+                    margin: 0,
+                    padding: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: ".5rem",
+                  }}
+                >
+                  <BsFacebook style={{ color: "#0866FF" }} /> Facebook :{" "}
+                </div>
+              }
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <input
+                {...register("facebook")}
+                type="text"
+                class="form-control"
+              />
+            </Form.Item>
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={
+                <div
+                  style={{
+                    margin: 0,
+                    padding: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: ".5rem",
+                  }}
+                >
+                  <BsLinkedin style={{ color: "#0A66C2" }} /> LinkedIn :{" "}
+                </div>
+              }
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <input
+                {...register("linkedin")}
+                type="text"
+                class="form-control"
+              />
+            </Form.Item>
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={
+                <div
+                  style={{
+                    margin: 0,
+                    padding: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: ".5rem",
+                  }}
+                >
+                  <BsYoutube style={{ color: "red" }} /> Youtube :{" "}
+                </div>
+              }
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <input
+                {...register("youtube")}
+                type="text"
+                class="form-control"
+              />
+            </Form.Item>
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={
+                <div
+                  style={{
+                    margin: 0,
+                    padding: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: ".5rem",
+                  }}
+                >
+                  <BsTwitter style={{ color: "#0866FF" }} /> Twitter :{" "}
+                </div>
+              }
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <input
+                {...register("twitter")}
+                type="text"
+                class="form-control"
+              />
             </Form.Item>
 
             <Form.Item style={{ textAlign: "center", marginTop: "1rem" }}>
