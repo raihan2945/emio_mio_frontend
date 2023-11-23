@@ -124,7 +124,6 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
       title,
       website_url,
       whatsapp,
-      years_of_experience,
       upazila,
       facebook, 
       youtube,
@@ -142,7 +141,6 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
       title,
       website_url,
       whatsapp,
-      years_of_experience,
       upazila,
       facebook, 
       youtube,
@@ -386,23 +384,7 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
                 style={{ fontWeight: "400" }}
               />
             </Form.Item>
-            <Form.Item
-              style={{ marginBottom: "10px" }}
-              label={
-                <p style={{ margin: 0, padding: 0 }}>Years of Experience : </p>
-              }
-              // name="years_of_experience"
-              labelCol={{ span: 1 }}
-              wrapperCol={{ span: 6 }}
-              // rules={[{ required: true, message: "Please enter your name!" }]}
-            >
-              <input
-                type="number"
-                style={{ fontWeight: "400" }}
-                class="form-control"
-                {...register("years_of_experience")}
-              />
-            </Form.Item>
+
             <Form.Item
               style={{ marginBottom: "10px" }}
               label={<p style={{ margin: 0, padding: 0 }}>Website : </p>}
