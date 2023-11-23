@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import { Button, Card, Form, Select, TimePicker } from "antd";
+import { AutoComplete, Button, Card, Form, Select, TimePicker } from "antd";
 import moment from "moment";
+import { useGetAllSpecialtyQuery } from "../../redux/features/speciality/specialityApi";
 
 const ChamberForm = ({
   selectdHospital,
@@ -22,34 +23,47 @@ const ChamberForm = ({
     { label: "Fri", value: "Fri" },
   ];
 
-  //   useEffect(() => {
-  //     return () => {
-  //         console.log("called================")
-  //       if (chamber) {
-  //         console.log("chamber is : ", chamber)
-  //         Object.keys(chamber).forEach(key=>{
-  //             setValue('key', undefined)
-  //         })
-  //       }
-  //     };
-  //   }, []);
+  const { data: getSpecailties, refetch: refetchSpeciality } =
+    useGetAllSpecialtyQuery(watch("speciality")?.label);
 
   return (
     <Form layout="vertical">
       <Form.Item style={{ marginBottom: "5px" }}>
-        <Card style={{ padding: "0px" }}>
-          <p style={{ fontWeight: "500", margin: 0 }}>
+        <Card style={{ padding: "0px", backgroundColor: "white" }}>
+          <p
+            style={{
+              fontWeight: "500",
+              margin: 0,
+              color: "#006bb1",
+              fontSize: ".9rem",
+            }}
+          >
             Hospital : {selectdHospital?.name}{" "}
           </p>
-          <p style={{ fontWeight: "400", margin: 0 }}>
-            Address :{selectdHospital?.upazila}-{selectdHospital?.full_address}
+          <p
+            style={{
+              fontWeight: "400",
+              margin: 0,
+              color: "#212121",
+            }}
+          >
+            <strong>Address : </strong> {selectdHospital?.upazila}-
+            {selectdHospital?.full_address}
           </p>
           <Button
+            size="small"
             onClick={() => setIsHospital(true)}
-            type="primary"
-            style={{ marginTop: "5px" }}
+            // type="primary"
+            style={{
+              marginTop: "5px",
+              fontWeight: "400",
+              boxShadow: "none",
+              backgroundColor: "#006bb1",
+              color: "white",
+              border: "none",
+            }}
           >
-            Add/Change
+            {selectdHospital ? "Change" : "Add"}
           </Button>
         </Card>
       </Form.Item>
@@ -59,6 +73,28 @@ const ChamberForm = ({
           {...register("add_address")}
           type="text"
           className="form-control"
+        />
+      </Form.Item>
+
+      <Form.Item style={{ marginBottom: "5px" }} label="Speciality">
+        <AutoComplete
+          onChange={(value, option) => {
+            setValue("speciality", { label: value });
+            refetchSpeciality();
+          }}
+          onSelect={(value, option) => {
+            setValue("speciality", {
+              value: option.value,
+              label: option.label,
+            });
+          }}
+          options={getSpecailties?.data?.map((d) => {
+            return {
+              label: d.name,
+              value: d.id,
+            };
+          })}
+          value={watch("speciality")?.label}
         />
       </Form.Item>
 

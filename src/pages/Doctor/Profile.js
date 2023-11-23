@@ -23,6 +23,7 @@ import Experiences from "../../views/DoctorProfile/Experiences";
 import { useParams } from "react-router-dom";
 import { useGetDoctorProfileQuery } from "../../redux/features/doctor/doctorApi";
 import Brand from "../../views/DoctorProfile/Brand";
+import Career from "../../views/DoctorProfile/Career";
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -100,6 +101,7 @@ const Profile = () => {
             <TabPane tab=" Professional Info" key="2">
               <ProfessionalInfo
                 doctor={doctor}
+                doctorRefetch={doctorRefetch}
                 success={success}
                 error={error}
                 warning={warning}
@@ -134,6 +136,11 @@ const Profile = () => {
           {doctor && (
             <TabPane tab="Experiences" key="6">
               <Experiences doctor={doctor} success={success} error={error}/>
+            </TabPane>
+          )}
+          {doctor && (
+            <TabPane tab="Career" key="7">
+              <Career doctor={doctor} success={success} error={error}/>
             </TabPane>
           )}
         </Tabs>

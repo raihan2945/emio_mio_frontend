@@ -3,22 +3,14 @@ import { useForm } from "react-hook-form";
 
 import {
   Button,
-  Card,
-  Form,
-  Input,
   Select,
-  DatePicker,
   message,
   Collapse,
   Divider,
   Tabs,
   Modal,
-  TimePicker,
   Popconfirm,
 } from "antd";
-import { AiOutlineCloudUpload, AiFillSave } from "react-icons/ai";
-import dayjs from "dayjs";
-import moment from "moment";
 
 import "../../pages/Doctor/profile.css";
 import {
@@ -31,22 +23,15 @@ import HospitalForm from "../Hospital/HospitalForm";
 import ChamberForm from "../Chamber/ChamberForm";
 
 const { Panel } = Collapse;
-const { Option } = Select;
-const { TabPane } = Tabs;
 
 const Chambers = ({ doctor, success, error, warning }) => {
-  const [messageApi, contextHolder] = message.useMessage();
   const {
     register,
-    reset,
-    handleSubmit,
     watch,
     getValues,
     setValue,
     formState: { errors },
   } = useForm();
-
-  const formRef = useRef();
 
   const [chambers, setChambers] = useState([]);
 
@@ -72,12 +57,6 @@ const Chambers = ({ doctor, success, error, warning }) => {
 
   const [selectdHospital, setSelectedHospital] = useState(null);
 
-  const format = "HH:mm";
-
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
-  };
-
   const resetAndClose = (chamber) => {
     if (chamber) {
       Object.keys(chamber).forEach((key) => {
@@ -95,7 +74,6 @@ const Chambers = ({ doctor, success, error, warning }) => {
 
   useEffect(() => {
     if (getChambers) {
-      // const newDatas = [...getChambers.data];
       const newDatas = getChambers.data.map((row) => {
         let parsedHospital;
         try {
@@ -111,22 +89,19 @@ const Chambers = ({ doctor, success, error, warning }) => {
         };
       });
 
-      // console.log("new datas is : ", newDatas);
       setChambers(newDatas);
     }
   }, [getChambers]);
 
   const onEdit = (chamber) => {
-    // console.log("Chamber is : ", chamber);
     Object.keys(chamber).forEach((key) => {
       if (key == "available_days") {
         const days = JSON.parse(chamber[key]);
-        // console.log("days is :", days);
         setValue(key, days);
       } else if (key == "hospital") {
-        const hos = chamber[key]
-        // console.log("hos is : ", hos)
         setSelectedHospital(chamber[key]);
+      } else if (key == "speciality") {
+        setValue(key, { value: chamber[key], label: chamber?.speciality_name });
       } else {
         setValue(key, chamber[key]);
       }
@@ -145,7 +120,11 @@ const Chambers = ({ doctor, success, error, warning }) => {
     const submitData = {};
     Object.keys(formValues).forEach((key) => {
       if (formValues[key]) {
-        submitData[key] = formValues[key];
+        if (key == "speciality") {
+          submitData[key] = watch("speciality")?.value;
+        } else {
+          submitData[key] = formValues[key];
+        }
       }
     });
     submitData.dr_id = doctor?.id;
@@ -156,6 +135,8 @@ const Chambers = ({ doctor, success, error, warning }) => {
       delete submitData.created_at;
       delete submitData.uuid;
       delete submitData.hosptial;
+      delete submitData.speciality_name;
+
       updateChamber({ id: editChamber?.id, data: submitData });
     } else {
       createChamber(submitData);
@@ -219,8 +200,6 @@ const Chambers = ({ doctor, success, error, warning }) => {
       success("Chamber deleted successfully");
     }
   }, [deleteStatus]);
-
-  // console.log("chambers is : ", chambers);
 
   return (
     <>
@@ -479,8 +458,8 @@ const Chambers = ({ doctor, success, error, warning }) => {
           setSelectedHospital={setSelectedHospital}
           success={success}
           warning={warning}
-          error ={error}
-       />
+          error={error}
+        />
       </Modal>
     </>
   );

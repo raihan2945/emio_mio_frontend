@@ -1,0 +1,17 @@
+.ant-card-head {
+  background-color: #006BB1;
+}
+
+.ant-card-head-title{
+  color: white;
+}
+
+.layout-dashboard .ant-card {
+  border-radius: 0 !important;
+}
+
+
+.ant-card-head-wrapper {
+  min-height: 10px !important;
+  height: 50;
+}
