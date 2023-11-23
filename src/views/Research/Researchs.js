@@ -56,7 +56,7 @@ const Trainings = ({ doctor, success, error }) => {
   return (
     <div>
       <Card
-        title="Trainings"
+        title="Research"
         extra={
           <Button
             type="primary"
