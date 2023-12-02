@@ -3,17 +3,23 @@ import Core from "../../components/brandItems/Core";
 import { Button, Form } from "antd";
 import Support from "../../components/brandItems/Support";
 import Prospect from "../../components/brandItems/Prospect";
-import { useAssignBrandMutation, useGetAllBrandsByDoctorQuery } from "../../redux/features/brand/brandApi";
+import {
+  useAssignBrandMutation,
+  useGetAllBrandsByDoctorQuery,
+} from "../../redux/features/brand/brandApi";
 
 const Brand = ({ doctor, success, error }) => {
-  const [AssignBrand, {isSuccess:createSuccess, error:createError, stats:createStatus}] = useAssignBrandMutation();
-  const {data:getBrands} = useGetAllBrandsByDoctorQuery(doctor?.id)
+  const [
+    AssignBrand,
+    { isSuccess: createSuccess, error: createError, stats: createStatus },
+  ] = useAssignBrandMutation();
+  const { data: getBrands } = useGetAllBrandsByDoctorQuery(doctor?.id);
 
   const [values, setValues] = useState([]);
   const [values1, setValues1] = useState([]);
   const [values2, setValues2] = useState([]);
 
-  console.log("get brands is :", getBrands)
+  console.log("get brands is :", getBrands);
 
   const submit = () => {
     const data = {
@@ -22,7 +28,7 @@ const Brand = ({ doctor, success, error }) => {
       support: values1.map((v) => v.value),
       prospect: values2.map((v) => v.value),
     };
-    AssignBrand(data)
+    AssignBrand(data);
   };
 
   useEffect(() => {
@@ -42,6 +48,19 @@ const Brand = ({ doctor, success, error }) => {
       // refetch();
     }
   }, [createStatus, createSuccess, createError]);
+
+  useEffect(() => {
+    if (getBrands?.data) {
+      const cores = getBrands?.data?.cores.map(v=>v.core)
+      const supports = getBrands?.data?.supports.map(v=>v?.support)
+      const prospects = getBrands?.data?.prospects.map(v=>v?.prospect)
+      setValues(cores);
+      // setValues1(supports);
+      // setValues2(prospects);
+      console.log("cores is : ", supports)
+    }
+  }, [getBrands]);
+
 
   return (
     <div style={{ padding: "0rem .7rem" }}>
