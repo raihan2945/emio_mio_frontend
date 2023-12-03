@@ -51,16 +51,21 @@ const Brand = ({ doctor, success, error }) => {
 
   useEffect(() => {
     if (getBrands?.data) {
-      const cores = getBrands?.data?.cores.map(v=>v.core)
-      const supports = getBrands?.data?.supports.map(v=>v?.support)
-      const prospects = getBrands?.data?.prospects.map(v=>v?.prospect)
+      const cores = getBrands?.data?.cores.map((v) => {
+        return { label: v.core, value: v.core };
+      });
+      const supports = getBrands?.data?.supports.map((v) => {
+        return { label: v?.support, value: v?.support };
+      });
+      const prospects = getBrands?.data?.prospects.map((v) => {
+        return { label: v?.prospect, value: v?.prospect };
+      });
       setValues(cores);
-      // setValues1(supports);
-      // setValues2(prospects);
-      console.log("cores is : ", supports)
+      setValues1(supports);
+      setValues2(prospects);
+      // console.log("cores is : ", supports)
     }
   }, [getBrands]);
-
 
   return (
     <div style={{ padding: "0rem .7rem" }}>
