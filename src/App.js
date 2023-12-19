@@ -36,13 +36,13 @@ import PrivateRoute from "./components/routing/privateRoute";
 function App() {
   const accessToken = useSelector((state) => state?.auth?.accessToken);
 
-  const { data } = useGetUserQuery();
+  const { data, refetch:refetchBaseUser } = useGetUserQuery();
 
   return (
     <div className="App">
       <Routes>
         <Route path="/sign-up" exact element={<SignUp />} />
-        <Route path="/sign-in" exact element={<SignIn />} />
+        <Route path="/sign-in" exact element={<SignIn refetchBaseUser={refetchBaseUser}/>} />
 
         <Route
           exact
