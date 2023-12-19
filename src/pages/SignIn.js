@@ -23,7 +23,7 @@ const { Header, Footer, Content } = Layout;
 const SignIn = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
-  const { data, refetch } = useGetUserQuery();
+  const { data, refetch: refetchBaseUser } = useGetUserQuery();
 
   const user = useSelector((state) => state?.user?.data);
   const token = useSelector((state) => state?.auth?.accessToken);
@@ -71,6 +71,8 @@ const SignIn = () => {
 
   useEffect(() => {
     if (token) {
+      // window.location.reload();
+      refetchBaseUser();
       navigate("/");
     }
   }, [loginSuccess, token]);
