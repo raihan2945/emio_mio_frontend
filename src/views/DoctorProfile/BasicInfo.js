@@ -27,6 +27,10 @@ import dayjs from "dayjs";
 import moment from "moment";
 import baseUrl from "../../utils/baseUrl";
 
+import allCountry from "./country.json";
+
+console.log("All Country is : ", allCountry);
+
 const { Option } = Select;
 
 const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
@@ -180,18 +184,12 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
     const form = new FormData();
     const submitData = {};
 
-    console.log("Payload is : ", payload);
-
-    // return;
-
     Object.keys(payload).forEach((key) => {
       if (formValues[key]) {
         form.append(key, formValues[key]);
         submitData[key] = formValues[key];
       }
     });
-
-    // console.log("submit data is : ", submitData);
 
     if (selectedDivision) {
       form.append("division", selectedDivision?.children);
@@ -702,11 +700,16 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
               wrapperCol={{ span: 6 }}
               // rules={[{ required: true, message: "Please enter your name!" }]}
             >
-              <input
-                {...register("nationality")}
-                type="text"
-                class="form-control"
-              />
+              <Select
+                onChange={(value) => setValue("nationality", value)}
+                defaultValue={doctor?.nationality}
+              >
+                {allCountry?.map((country) => (
+                  <Option value={`${country?.ID}`}>
+                    {country.CountryName}
+                  </Option>
+                ))}
+              </Select>
             </Form.Item>
 
             <Form.Item
