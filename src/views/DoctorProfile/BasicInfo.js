@@ -13,7 +13,7 @@ import {
   Tabs,
 } from "antd";
 import { AiOutlineCloudUpload, AiFillSave } from "react-icons/ai";
-import { BsFacebook,BsYoutube, BsTwitter,BsLinkedin } from "react-icons/bs";
+import { BsFacebook, BsYoutube, BsTwitter, BsLinkedin } from "react-icons/bs";
 import "../../pages/Doctor/profile.css";
 import Footer from "./Footer";
 import MajorInfo from "./MajorInfo";
@@ -26,6 +26,10 @@ import { useDoctorUpdatePutMutation } from "../../redux/features/doctor/doctorAp
 import dayjs from "dayjs";
 import moment from "moment";
 import baseUrl from "../../utils/baseUrl";
+
+import allCountry from "./country.json";
+
+console.log("All Country is : ", allCountry);
 
 const { Option } = Select;
 
@@ -110,7 +114,6 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
       });
   }, [doctor]);
 
-  const onFinish = () => {};
   const onSubmit = () => {
     const formValues = getValues();
 
@@ -125,10 +128,25 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
       website_url,
       whatsapp,
       upazila,
-      facebook, 
+      facebook,
       youtube,
       linkedin,
-      twitter
+      twitter,
+      nid,
+      passport_no,
+      passport_validity,
+      rank_profile,
+      religion,
+      nationality,
+      marital_status,
+      marage_date,
+      govt_service_holder,
+      hobby,
+      spouse_name,
+      spouse_date_of_birth,
+      spouse_occupation,
+      sopuse_doctor_id,
+      child_information,
     } = formValues;
 
     const payload = {
@@ -142,10 +160,25 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
       website_url,
       whatsapp,
       upazila,
-      facebook, 
+      facebook,
       youtube,
       linkedin,
-      twitter
+      twitter,
+      nid,
+      passport_no,
+      passport_validity,
+      rank_profile,
+      religion,
+      nationality,
+      marital_status,
+      marage_date,
+      govt_service_holder,
+      hobby,
+      spouse_name,
+      spouse_date_of_birth,
+      spouse_occupation,
+      sopuse_doctor_id,
+      child_information,
     };
 
     const form = new FormData();
@@ -157,8 +190,6 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
         submitData[key] = formValues[key];
       }
     });
-
-    // console.log("submit data is : ", submitData);
 
     if (selectedDivision) {
       form.append("division", selectedDivision?.children);
@@ -347,28 +378,6 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
                 class="form-control"
               />
             </Form.Item>
-
-            {/* <Form.Item
-              style={{ marginBottom: "10px" }}
-              // label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
-              name="recognitions"
-              labelCol={{ span: 1 }}
-              wrapperCol={{ span: 6 }}
-              // rules={[{ required: true, message: "Please enter your name!" }]}
-            >
-              <Input placeholder="Recognitions" style={{ fontWeight: "400" }} />
-            </Form.Item> */}
-
-            {/* <Form.Item
-              style={{ marginBottom: "10px" }}
-              // label={<p style={{ margin: 0, padding: 0 }}>Gender : </p>}
-              name="memberships"
-              labelCol={{ span: 1 }}
-              wrapperCol={{ span: 6 }}
-              // rules={[{ required: true, message: "Please enter your name!" }]}
-            >
-              <Input placeholder="Memberships" style={{ fontWeight: "400" }} />
-            </Form.Item> */}
 
             <Form.Item
               style={{ marginBottom: "10px" }}
@@ -593,6 +602,277 @@ const BasicInfo = ({ id, doctor, doctorRefetch, success, error, warning }) => {
             >
               <input
                 {...register("twitter")}
+                type="text"
+                class="form-control"
+              />
+            </Form.Item>
+
+            <Divider
+              orientation="center"
+              orientationMargin={0}
+              style={{ marginBottom: "0", fontSize: ".8rem" }}
+            >
+              Others
+            </Divider>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>NID : </p>}
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <input {...register("nid")} type="text" class="form-control" />
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Passport No : </p>}
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <input
+                {...register("passport_no")}
+                type="text"
+                class="form-control"
+              />
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={
+                <p style={{ margin: 0, padding: 0 }}>Passport Validity : </p>
+              }
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <input
+                {...register("passport_validity")}
+                type="text"
+                class="form-control"
+              />
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Rank Profile : </p>}
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <input
+                {...register("rank_profile")}
+                type="text"
+                class="form-control"
+              />
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Religion : </p>}
+              // name="gender"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              value={doctor?.religion}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <Select
+                onChange={(value) => setValue("religion", value)}
+                defaultValue={doctor?.religion}
+              >
+                <Option value="1">Islam</Option>
+                <Option value="2">Hindu</Option>
+                <Option value="3">Christian</Option>
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Nationality : </p>}
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <Select
+                onChange={(value) => setValue("nationality", value)}
+                defaultValue={doctor?.nationality}
+              >
+                {allCountry?.map((country) => (
+                  <Option value={`${country?.ID}`}>
+                    {country.CountryName}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Marital Status : </p>}
+              // name="gender"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              value={doctor?.marital_status}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <Select
+                onChange={(value) => setValue("marital_status", value)}
+                defaultValue={doctor?.marital_status}
+              >
+                <Option value="1">Married</Option>
+                <Option value="2">Single</Option>
+                {/* <Option value="3">Christian</Option> */}
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Marrage Date : </p>}
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <DatePicker
+                value={
+                  watch("marage_date") &&
+                  moment(watch("marage_date"), dateFormat)
+                }
+                format={dateFormat}
+                placeholder="Marrage Date"
+                style={{ width: "100%" }}
+                allowClear={false}
+                onChange={(date, dateString) => {
+                  // console.log("date is : ", date);
+                  setValue("marage_date", dateString);
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={
+                <p style={{ margin: 0, padding: 0 }}>Govt service holder : </p>
+              }
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <Select
+                onChange={(value) => setValue("govt_service_holder", value)}
+                defaultValue={`${doctor?.govt_service_holder}`}
+              >
+                <Option value="1">Yes</Option>
+                <Option value="0">No</Option>
+                {/* <Option value="3">Christian</Option> */}
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Hobby : </p>}
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <input {...register("hobby")} type="text" class="form-control" />
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={<p style={{ margin: 0, padding: 0 }}>Spouse Name : </p>}
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <input
+                {...register("spouse_name")}
+                type="text"
+                class="form-control"
+              />
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={
+                <p style={{ margin: 0, padding: 0 }}>Spouse Date Of Birth : </p>
+              }
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <DatePicker
+                value={
+                  watch("spouse_date_of_birth") &&
+                  moment(watch("Spouse Date Of Birth"), dateFormat)
+                }
+                format={dateFormat}
+                placeholder="Marrage Date"
+                style={{ width: "100%" }}
+                allowClear={false}
+                onChange={(date, dateString) => {
+                  // console.log("date is : ", date);
+                  setValue("spouse_date_of_birth", dateString);
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={
+                <p style={{ margin: 0, padding: 0 }}>Spouse Occupation : </p>
+              }
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <input
+                {...register("spouse_occupation")}
+                type="text"
+                class="form-control"
+              />
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={
+                <p style={{ margin: 0, padding: 0 }}>Spouse doctor id : </p>
+              }
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <input
+                {...register("sopuse_doctor_id")}
+                type="text"
+                class="form-control"
+              />
+            </Form.Item>
+
+            <Form.Item
+              style={{ marginBottom: "10px" }}
+              label={
+                <p style={{ margin: 0, padding: 0 }}>Cild Information : </p>
+              }
+              // name="dob"
+              labelCol={{ span: 1 }}
+              wrapperCol={{ span: 6 }}
+              // rules={[{ required: true, message: "Please enter your name!" }]}
+            >
+              <input
+                {...register("child_information")}
                 type="text"
                 class="form-control"
               />

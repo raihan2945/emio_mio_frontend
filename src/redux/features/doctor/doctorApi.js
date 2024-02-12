@@ -14,6 +14,7 @@ const doctorApi = apiSlice.injectEndpoints({
         },
       }),
       invalidatesTags: ["Doctor"],
+      providesTags: ["Doctor"],
     }),
     getDoctorProfile: builder.query({
       query: (id) => ({
@@ -24,6 +25,7 @@ const doctorApi = apiSlice.injectEndpoints({
         },
       }),
       invalidatesTags: ["Doctor"],
+      providesTags: ["Doctor"],
     }),
     doctorCreateOrUpdate: builder.mutation({
       query: ({ id, data }) => ({
@@ -35,6 +37,7 @@ const doctorApi = apiSlice.injectEndpoints({
         },
       }),
       invalidatesTags: ["Doctor"],
+      providesTags: ["Doctor"],
     }),
     doctorUpdatePut: builder.mutation({
       query: ({ id, data }) => ({
@@ -46,6 +49,7 @@ const doctorApi = apiSlice.injectEndpoints({
         },
       }),
       invalidatesTags: ["Doctor"],
+      providesTags: ["Doctor"],
     }),
     verifyDoctor: builder.mutation({
       query: ({data }) => ({
@@ -57,6 +61,7 @@ const doctorApi = apiSlice.injectEndpoints({
         },
       }),
       invalidatesTags: ["Doctor"],
+      providesTags: ["Doctor"],
     }),
     // userLogin: builder.mutation({
     //   query: (data) => ({

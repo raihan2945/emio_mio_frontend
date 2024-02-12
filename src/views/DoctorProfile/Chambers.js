@@ -35,6 +35,8 @@ const Chambers = ({ doctor, success, error, warning }) => {
 
   const [chambers, setChambers] = useState([]);
 
+  console.log("chambers : ", chambers)
+
   const { data: getChambers, refetch: refetchChambers } = useGetChambersQuery(
     doctor?.id
   );
@@ -236,13 +238,23 @@ const Chambers = ({ doctor, success, error, warning }) => {
                   header={
                     <div>
                       <p style={{ margin: 0, fontWeight: "500" }}>
-                        {chamber?.hospital.name}
+                        {chamber?.hospital?.name}
                       </p>
                       <p style={{ margin: 0 }}>
                         {" "}
                         {chamber?.hospital?.upazila}{" "}
                         {chamber?.hospital?.upazila && ","}{" "}
                         {chamber?.hospital?.district}
+                      </p>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: ".8rem",
+                          fontWeight: "500",
+                          color: "#616161",
+                        }}
+                      >
+                        {chamber?.add_address}
                       </p>
                     </div>
                   }
@@ -262,6 +274,20 @@ const Chambers = ({ doctor, success, error, warning }) => {
                         {chamber?.hospital?.upazila}{" "}
                         {chamber?.hospital?.upazila && ","}{" "}
                         {chamber?.hospital?.full_address}
+                      </p>
+                      <Divider style={{ margin: "5px 0px" }} />
+                    </div>
+                    <div>
+                      <p style={{ margin: 0, fontSize: ".7rem" }}>Addtional Address</p>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: ".8rem",
+                          fontWeight: "500",
+                          color: "#616161",
+                        }}
+                      >
+                        {chamber?.add_address}
                       </p>
                       <Divider style={{ margin: "5px 0px" }} />
                     </div>
